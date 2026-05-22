@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
@@ -813,7 +813,7 @@ body.light .post-card{background:#fff}
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('post-compose-modal')">বাতিল</button>
-      <button class="btn btn-primary" onclick="submitCompose()" style="min-width:120px"><i class="fas fa-paper-plane"></i> পোস্ট করুন</button>
+      <button class="btn btn-primary" id="cm-submit-btn" onclick="submitCompose()" style="min-width:120px"><i class="fas fa-paper-plane"></i> পোস্ট করুন</button>
     </div>
   </div>
 </div>
@@ -1020,7 +1020,7 @@ var MOCK={
 };
 
 // আপনার GAS URL এখানে বসান
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbxCZ7s2ySuejzU630MEcQO-tuSbX9-HZtyBT1pG4QJmeo_ROQD2U4mo92e3Z_ToL_dq-w/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbx-l76gpl7dqX6RBpTvm9ozJVptxnEX4JGG4YymDobwAspeuIuXwcu2NXHMscJayWRLqA/exec';
 
 function gasCall(method, args, onSuccess, onFailure) {
   args = args || [];
@@ -1685,13 +1685,43 @@ function submitCompose(){
   var url=v('cm-url');
   var ytId=url?extractYouTubeId(url):null;
   if(!text&&!cmImgData&&!ytId){toast('error','ত্রুটি','কিছু একটা লিখুন বা মিডিয়া যোগ করুন');return;}
+  
   var type='text',videoUrl='',imgUrl='';
-  if(ytId){type='youtube';videoUrl=url;}
-  else if(cmImgData){type='image';imgUrl=cmImgData;}
+  if(ytId){type='youtube';videoUrl=url;imgUrl='';}
+  else if(cmImgData){type='image';imgUrl=cmImgData;videoUrl='';}
+  
+  if(imgUrl && imgUrl.length > 1500000){
+    toast('error','ছবি বড়','ছবি ১ MB-এর কম হতে হবে');return;
+  }
+  
+  // ✅ ID দিয়ে খোঁজো, querySelector নয়
+  var submitBtn=document.getElementById('cm-submit-btn');
+  if(submitBtn){submitBtn.disabled=true;submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> পোস্ট হচ্ছে...';}
+  
   gasCall('postStatus',[currentUser,type,text,videoUrl,imgUrl],function(r){
-    if(r&&r.success){toast('success','সফল','পোস্ট হয়েছে! 🎉');closeModal('post-compose-modal');loadStatuses();buildNewsFeed();}
-    else toast('error','ত্রুটি',r?r.message:'');
-  },function(){toast('error','সার্ভার ত্রুটি','');});
+    // ✅ আগে button reset, তারপর বাকি কাজ
+    if(submitBtn&&submitBtn.parentElement){
+      submitBtn.disabled=false;
+      submitBtn.innerHTML='<i class="fas fa-paper-plane"></i> পোস্ট করুন';
+    }
+    if(r&&r.success){
+      toast('success','সফল','পোস্ট হয়েছে! 🎉');
+      closeModal('post-compose-modal');
+      cmImgData=null;
+      loadStatuses();
+      buildNewsFeed();
+    } else {
+      toast('error','ত্রুটি',r?r.message:'পোস্ট ব্যর্থ');
+    }
+  },function(err){
+    if(submitBtn&&submitBtn.parentElement){
+      submitBtn.disabled=false;
+      submitBtn.innerHTML='<i class="fas fa-paper-plane"></i> পোস্ট করুন';
+    }
+    // ✅ পোস্ট হয়ে গেলে error দেখাবে না
+    if(r&&r.success) return;
+    toast('error','সার্ভার ত্রুটি','নেটওয়ার্ক সমস্যা');
+  });
 }
 
 function showNewsFeed(){

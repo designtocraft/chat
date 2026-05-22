@@ -1,0 +1,2170 @@
+﻿<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ronginbari Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e2b;--bg4:#222638;
+  --surface:#1f2336;--surface2:#272c42;--border:#2e3350;
+  --accent:#6C63FF;--accent2:#8b85ff;--accent3:#ff6584;
+  --green:#22d37a;--yellow:#ffd166;--red:#ff4757;--blue:#4facfe;
+  --text:#e8eaf6;--text2:#9ea3c0;--text3:#5c6080;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 8px 32px rgba(0,0,0,.45);
+  --font:'Hind Siliguri','Plus Jakarta Sans',sans-serif;--font2:'Sora',sans-serif;
+  --sidebar-w:320px;--transition:.18s ease;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font)}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+.hidden{display:none!important}
+.flex{display:flex}.col{flex-direction:column}.center{align-items:center;justify-content:center}
+.gap4{gap:4px}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.w100{width:100%}
+.badge{background:var(--accent3);color:#fff;border-radius:20px;font-size:10px;font-weight:700;padding:1px 6px;min-width:18px;text-align:center;line-height:1.5}
+
+/* ── LOADING ── */
+#loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;transition:opacity .4s ease}
+#loading-overlay.fade-out{opacity:0;pointer-events:none}
+.loader-logo{font-family:var(--font2);font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.loader-bar{width:140px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.loader-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:2px;animation:barFill 1.8s ease infinite}
+@keyframes barFill{0%{width:0;margin-left:0}50%{width:100%;margin-left:0}100%{width:0;margin-left:100%}}
+.loader-text{font-size:12px;color:var(--text3);letter-spacing:.08em}
+
+/* ── AUTH ── */
+#auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;background-image:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(108,99,255,.2) 0%,transparent 70%)}
+.auth-panel{width:min(420px,94vw);background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px 28px;animation:slideUp .4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.auth-brand{text-align:center;margin-bottom:24px}
+.auth-brand .logo{font-family:var(--font2);font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-brand p{font-size:13px;color:var(--text2);margin-top:4px}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 13px;font-size:14px;color:var(--text);outline:none;transition:var(--transition);font-family:var(--font)}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.15)}
+.form-input::placeholder{color:var(--text3)}
+textarea.form-input{resize:vertical;min-height:80px}
+.form-group{margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius-sm);padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);font-family:var(--font)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;width:100%;margin-top:4px}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-danger{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,.3)}
+.btn-green{background:rgba(34,211,122,.15);color:var(--green);border:1px solid rgba(34,211,122,.3)}
+.auth-switch{text-align:center;margin-top:14px;font-size:13px;color:var(--text2)}
+.auth-switch a{color:var(--accent2);text-decoration:none;font-weight:600}
+.avatar-upload-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px}
+.avatar-upload-ring{position:relative;width:80px;height:80px;border-radius:50%;cursor:pointer}
+.avatar-upload-ring img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--accent)}
+.avatar-upload-ring .cam-overlay{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(108,99,255,.6);opacity:0;transition:.2s;font-size:20px;color:#fff}
+.avatar-upload-ring:hover .cam-overlay{opacity:1}
+.avatar-upload-ring input[type=file]{display:none}
+.avatar-hint{font-size:11px;color:var(--text3)}
+
+/* ── APP LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:transform .3s ease;z-index:200}
+#sidebar-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2)}
+.stab{flex:1;padding:9px 4px;text-align:center;font-size:9px;font-weight:700;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);text-transform:uppercase;letter-spacing:.04em}
+.stab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.stab i{display:block;font-size:14px;margin-bottom:2px}
+.stab:hover:not(.active){color:var(--text2)}
+#sidebar-header{padding:10px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+#my-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid var(--accent)}
+#my-name{font-size:13px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#my-status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);border:2px solid var(--bg2);flex-shrink:0}
+#sidebar-header .actions{display:flex;gap:5px}
+#sidebar-header .actions button{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:var(--transition);position:relative;flex-shrink:0}
+#sidebar-header .actions button:hover{background:var(--surface2);color:var(--text)}
+.sidebar-search{padding:8px 12px}
+.search-box{background:var(--bg3);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:0 11px;gap:7px}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box i{color:var(--text3);font-size:12px}
+.search-box input{background:transparent;border:none;outline:none;font-size:13px;color:var(--text);flex:1;padding:8px 0;font-family:var(--font)}
+.spanel{flex:1;overflow-y:auto;display:none}
+.spanel.active{display:block}
+.contact-item{padding:9px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:var(--transition);position:relative;border-bottom:1px solid rgba(255,255,255,.03)}
+.contact-item:hover{background:var(--bg3)}
+.contact-item.active{background:var(--bg3);border-left:3px solid var(--accent)}
+.ci-avatar{position:relative;flex-shrink:0}
+.ci-avatar img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+.ci-dot{position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg2)}
+.ci-dot.online{background:var(--green)}.ci-dot.offline{background:var(--text3)}
+.ci-info{flex:1;min-width:0}
+.ci-info h6{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px}
+.ci-info p{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-badge{margin-left:auto;flex-shrink:0}
+#stories-bar{padding:8px 12px;border-bottom:1px solid var(--border)}
+#stories-bar h6{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:7px;font-weight:700}
+.stories-scroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:3px}
+.stories-scroll::-webkit-scrollbar{height:2px}
+.story-item{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:.15s}
+.story-item:hover{transform:scale(1.06)}
+.story-ring{width:48px;height:48px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--accent),var(--accent3));position:relative}
+.story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg2)}
+.story-ring .story-type-icon{position:absolute;bottom:0;right:0;width:16px;height:16px;border-radius:50%;background:var(--red);font-size:8px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2)}
+.story-name{font-size:9px;color:var(--text2);max-width:48px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.add-story-btn{width:48px;height:48px;border-radius:50%;background:var(--bg3);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);font-size:18px;transition:.15s;flex-shrink:0}
+.add-story-btn:hover{border-color:var(--accent)}
+.group-item{padding:9px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s;border-bottom:1px solid rgba(255,255,255,.03)}
+.group-item:hover,.group-item.active{background:var(--bg3)}
+.group-avatar{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.group-info h6{font-size:13px;font-weight:600;margin-bottom:1px}
+.group-info p{font-size:11px;color:var(--text2)}
+.btn-create-group{margin:9px 12px;background:var(--bg3);border:1px dashed var(--border);border-radius:var(--radius-sm);color:var(--accent);font-size:13px;font-weight:600;padding:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;width:calc(100% - 24px)}
+.btn-create-group:hover{background:var(--surface);border-style:solid}
+.friends-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:700;padding:9px 12px 3px}
+.friend-item{padding:8px 12px;display:flex;align-items:center;gap:9px}
+.friend-item img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.friend-item .fi-name{flex:1;font-size:13px;font-weight:600}
+.friend-item .fi-actions{display:flex;gap:4px}
+.fi-btn{border:none;padding:5px 9px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.fi-btn:hover{transform:scale(1.05)}
+
+/* ── MAIN AREA ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);position:relative}
+
+/* ─────────────────────────────────────────────
+   NEWS FEED — Facebook-style enhanced
+───────────────────────────────────────────── */
+#news-feed-screen{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* Top bar */
+#nf-topbar{padding:0 16px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:10}
+.nf-brand{font-family:var(--font2);font-size:17px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
+.nf-corner-actions{display:flex;gap:5px;align-items:center}
+.nf-corner-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.15s;position:relative;flex-shrink:0}
+.nf-corner-btn:hover{background:var(--surface2);color:var(--accent);border-color:var(--accent)}
+.nf-corner-btn .nbadge{position:absolute;top:-4px;right:-4px;background:var(--accent3);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 4px;min-width:14px;text-align:center;border:2px solid var(--bg2)}
+
+/* Stories strip (horizontal) */
+#nf-stories-strip{padding:10px 0;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.nf-stories-scroll{display:flex;gap:0;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+.nf-stories-scroll::-webkit-scrollbar{display:none}
+
+/* Story card (Facebook-style tall card) */
+.nf-story-card{flex-shrink:0;width:72px;cursor:pointer;position:relative;transition:.18s}
+.nf-story-card:hover{transform:translateY(-2px)}
+.nf-story-img-wrap{width:68px;height:110px;border-radius:12px;overflow:hidden;position:relative;border:2px solid var(--border)}
+.nf-story-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.nf-story-img-wrap .nf-story-gradient{position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.7))}
+.nf-story-img-wrap .nf-story-avatar-ring{position:absolute;top:6px;left:6px;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);overflow:hidden}
+.nf-story-img-wrap .nf-story-avatar-ring img{width:100%;height:100%;object-fit:cover}
+.nf-story-img-wrap .nf-story-name{position:absolute;bottom:5px;left:4px;right:4px;font-size:9px;font-weight:700;color:#fff;text-align:center;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nf-story-add-card{flex-shrink:0;width:68px;margin:0 2px}
+.nf-story-add-card .nf-story-add-wrap{width:68px;height:110px;border-radius:12px;background:var(--bg3);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:.15s}
+.nf-story-add-card .nf-story-add-wrap:hover{border-color:var(--accent);background:var(--surface)}
+.nf-story-add-card .nf-story-add-wrap i{font-size:22px;color:var(--accent)}
+.nf-story-add-card .nf-story-add-wrap span{font-size:9px;color:var(--text2);font-weight:600;text-align:center;line-height:1.2}
+
+/* Compose box */
+#nf-composer{padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.nf-compose-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.nf-compose-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--border);flex-shrink:0}
+.nf-compose-trigger{flex:1;background:var(--bg3);border:1.5px solid var(--border);border-radius:22px;padding:9px 16px;font-size:13px;color:var(--text3);cursor:pointer;transition:.15s;font-family:var(--font)}
+.nf-compose-trigger:hover{border-color:var(--accent);color:var(--text2)}
+.nf-compose-divider{height:1px;background:var(--border);margin-bottom:8px}
+.nf-compose-actions{display:flex;gap:0}
+.nf-compose-act{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;border-radius:9px;cursor:pointer;transition:.15s;font-size:12px;font-weight:600;color:var(--text2)}
+.nf-compose-act:hover{background:var(--bg3)}
+.nf-compose-act i{font-size:15px}
+
+/* Feed container */
+#nf-feed-wrap{flex:1;overflow-y:auto;background:var(--bg)}
+#nf-feed{max-width:680px;margin:0 auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+
+/* ──── POST CARD — full Facebook-style ──── */
+.post-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;animation:fadePost .35s cubic-bezier(.2,0,.3,1)}
+@keyframes fadePost{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Post Header */
+.post-hdr{padding:12px 14px 0;display:flex;align-items:center;gap:10px}
+.post-hdr-av{position:relative;flex-shrink:0;cursor:pointer}
+.post-hdr-av img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.post-hdr-av .ph-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg2);background:var(--green)}
+.post-hdr-info{flex:1}
+.post-hdr-info .ph-name{font-size:14px;font-weight:700;line-height:1.2;cursor:pointer}
+.post-hdr-info .ph-name:hover{text-decoration:underline;color:var(--accent2)}
+.post-hdr-info .ph-meta{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;margin-top:1px}
+.ph-meta .ph-dot{font-size:6px}
+.ph-friend-badge{background:rgba(108,99,255,.2);color:var(--accent2);border-radius:8px;padding:1px 7px;font-size:9px;font-weight:700;white-space:nowrap}
+.post-hdr-opts{margin-left:auto;position:relative}
+.post-opts-btn{background:none;border:none;color:var(--text3);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:.15s}
+.post-opts-btn:hover{background:var(--bg3);color:var(--text)}
+.post-opts-menu{position:absolute;right:0;top:36px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:5px;min-width:160px;z-index:100;box-shadow:var(--shadow);display:none;animation:fadeIn .13s ease}
+.post-opts-menu.open{display:block}
+.post-opts-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;transition:.12s;color:var(--text)}
+.post-opts-item:hover{background:var(--bg3)}
+.post-opts-item.danger{color:var(--red)}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+/* Post Body */
+.post-body{padding:10px 14px}
+.post-text-content{font-size:14.5px;line-height:1.7;color:var(--text);word-break:break-word}
+.post-text-content.large{font-size:20px;font-weight:600;line-height:1.5}
+
+/* Post Media */
+.post-media-grid{margin-top:8px;display:grid;gap:2px;border-radius:10px;overflow:hidden}
+.post-media-grid.grid-1 .pm-item{height:340px}
+.post-media-grid.grid-2{grid-template-columns:1fr 1fr}
+.post-media-grid.grid-2 .pm-item{height:240px}
+.post-media-grid.grid-3{grid-template-columns:1fr 1fr}
+.post-media-grid.grid-3 .pm-item:first-child{grid-column:1/-1;height:240px}
+.post-media-grid.grid-3 .pm-item:not(:first-child){height:150px}
+.post-media-grid.grid-4{grid-template-columns:1fr 1fr}
+.post-media-grid.grid-4 .pm-item{height:170px}
+.pm-item{overflow:hidden;position:relative;cursor:pointer;background:#000}
+.pm-item img,.pm-item video{width:100%;height:100%;object-fit:cover;transition:.25s}
+.pm-item:hover img,.pm-item:hover video{transform:scale(1.03)}
+.pm-item .pm-more-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff}
+
+/* YouTube thumbnail */
+.post-yt-wrap{margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;position:relative;background:#000}
+.post-yt-wrap img{width:100%;max-height:300px;object-fit:cover;display:block;transition:.2s}
+.post-yt-wrap:hover img{opacity:.85}
+.post-yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:rgba(255,0,0,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;pointer-events:none}
+.post-yt-title{padding:9px 12px;background:var(--bg3);font-size:12px;color:var(--text2);line-height:1.4}
+
+/* Post Stats Bar */
+.post-stats-bar{padding:6px 14px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.04)}
+.psb-left{display:flex;align-items:center;gap:5px}
+.psb-rx-stack{display:flex;margin-right:2px}
+.psb-rx-stack .rx-ico{width:20px;height:20px;border-radius:50%;border:2px solid var(--bg2);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;margin-left:-5px}
+.psb-rx-stack .rx-ico:first-child{margin-left:0}
+.psb-count{font-size:12px;color:var(--text2);cursor:pointer}
+.psb-count:hover{text-decoration:underline;color:var(--text)}
+.psb-right{display:flex;gap:10px}
+.psb-right span{font-size:12px;color:var(--text2);cursor:pointer}
+.psb-right span:hover{text-decoration:underline;color:var(--text)}
+
+/* Post Action Buttons */
+.post-actions{padding:2px 8px;display:flex;border-top:1px solid rgba(255,255,255,.04);position:relative}
+.post-act-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:none;background:none;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:.15s;font-family:var(--font);position:relative}
+.post-act-btn:hover{background:var(--bg3);color:var(--text)}
+.post-act-btn.liked{color:var(--accent3)}
+.post-act-btn.liked i{animation:heartPop .3s cubic-bezier(.36,.07,.19,.97)}
+@keyframes heartPop{0%{transform:scale(1)}40%{transform:scale(1.5)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+.post-act-btn i{font-size:15px}
+
+/* Reaction Popup (hover) */
+.rx-popup{position:absolute;bottom:calc(100% + 4px);left:0;background:var(--surface2);border:1px solid var(--border);border-radius:30px;padding:6px 10px;display:none;gap:4px;z-index:200;box-shadow:var(--shadow);white-space:nowrap}
+.rx-popup.show{display:flex;animation:rxPop .18s ease}
+@keyframes rxPop{from{opacity:0;transform:scale(.8) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.rx-popup span{font-size:22px;cursor:pointer;transition:.15s;display:inline-block;line-height:1}
+.rx-popup span:hover{transform:scale(1.5) translateY(-4px)}
+
+/* Comments Section */
+.post-comments{border-top:1px solid rgba(255,255,255,.04);display:none}
+.post-comments.open{display:block}
+
+/* Top comments preview (2 shown) */
+.pc-list{padding:8px 14px 0}
+.pc-item{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.pc-item img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.pc-bubble{background:var(--bg3);border-radius:14px;padding:7px 12px;flex:1;min-width:0}
+.pc-bubble .pc-name{font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:1px}
+.pc-bubble .pc-text{font-size:13px;color:var(--text);line-height:1.5;word-break:break-word}
+.pc-bubble .pc-actions{display:flex;gap:10px;margin-top:4px}
+.pc-action-btn{background:none;border:none;font-size:10px;color:var(--text3);cursor:pointer;font-weight:600;font-family:var(--font);transition:.12s}
+.pc-action-btn:hover{color:var(--accent2)}
+.pc-action-btn.liked{color:var(--accent3)}
+.pc-time{font-size:10px;color:var(--text3);margin-top:3px;padding-left:8px}
+.pc-view-more{padding:4px 14px;font-size:12px;color:var(--accent2);font-weight:600;cursor:pointer;background:none;border:none;font-family:var(--font)}
+.pc-view-more:hover{text-decoration:underline}
+
+/* Comment Input */
+.pc-input-row{padding:8px 14px;display:flex;gap:8px;align-items:center;position:sticky;bottom:0;background:var(--bg2)}
+.pc-input-row img{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.pc-input-wrap{flex:1;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:0 12px;gap:6px;transition:.15s}
+.pc-input-wrap:focus-within{border-color:var(--accent)}
+.pc-input-wrap input{background:none;border:none;outline:none;flex:1;font-size:13px;color:var(--text);padding:8px 0;font-family:var(--font)}
+.pc-input-wrap input::placeholder{color:var(--text3)}
+.pc-send{background:none;border:none;color:var(--accent);cursor:pointer;font-size:15px;padding:4px;transition:.15s;flex-shrink:0}
+.pc-send:hover{color:var(--accent2);transform:scale(1.1)}
+.pc-emoji-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px;transition:.15s}
+.pc-emoji-btn:hover{color:var(--accent)}
+
+/* Inline emoji quick picker for comments */
+.pc-emoji-strip{padding:4px 14px 0;display:none;flex-wrap:wrap;gap:4px}
+.pc-emoji-strip.show{display:flex}
+.pce-btn{background:none;border:none;font-size:18px;cursor:pointer;transition:.15s;padding:2px}
+.pce-btn:hover{transform:scale(1.3)}
+
+/* ── CHAT PANEL ── */
+#chat-header{padding:9px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;z-index:1;flex-shrink:0}
+#chat-header-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+#chat-header-name{font-size:14px;font-weight:700}
+#chat-header-sub{font-size:11px;color:var(--text2)}
+#chat-header .hdr-actions{display:flex;gap:6px;margin-left:auto}
+.hdr-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.15s}
+.hdr-btn:hover{background:var(--surface);color:var(--text)}
+#messages-area{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:3px;scroll-behavior:smooth}
+.msg-wrapper{display:flex;align-items:flex-end;gap:7px;animation:msgIn .22s ease;position:relative}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg-wrapper.sent{justify-content:flex-end}
+.msg-wrapper.received{justify-content:flex-start}
+.msg-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.msg-bubble{max-width:min(72%,500px);padding:9px 13px;border-radius:15px;font-size:13px;line-height:1.6;position:relative;word-break:break-word;cursor:pointer;transition:.15s}
+.msg-bubble:hover{filter:brightness(1.07)}
+.sent .msg-bubble{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;border-bottom-right-radius:3px}
+.received .msg-bubble{background:var(--surface);color:var(--text);border-bottom-left-radius:3px}
+.msg-meta{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:10px;opacity:.6}
+.sent .msg-meta{justify-content:flex-end}
+.tick-read{color:#90caf9}.tick-sent{color:rgba(255,255,255,.5)}
+.msg-reply-preview{background:rgba(255,255,255,.12);border-left:3px solid var(--accent2);padding:4px 8px;border-radius:4px;font-size:11px;margin-bottom:5px;color:rgba(255,255,255,.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.received .msg-reply-preview{background:rgba(255,255,255,.06);color:var(--text2)}
+.reactions-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.reaction-chip{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:2px 7px;font-size:11px;cursor:pointer;transition:.15s}
+.reaction-chip:hover{background:var(--surface2)}
+.reaction-picker{position:absolute;bottom:calc(100% + 6px);background:var(--surface2);border:1px solid var(--border);border-radius:13px;padding:7px 11px;display:none;gap:7px;z-index:200;box-shadow:var(--shadow)}
+.sent .reaction-picker{right:0}.received .reaction-picker{left:0}
+.reaction-picker span{font-size:19px;cursor:pointer;transition:.15s;display:inline-block}
+.reaction-picker span:hover{transform:scale(1.5)}
+.msg-ctx-menu{position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:5px;z-index:900;box-shadow:var(--shadow);min-width:145px;animation:fadeIn .13s ease}
+.msg-ctx-item{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:7px;font-size:12px;cursor:pointer;transition:.15s}
+.msg-ctx-item:hover{background:var(--bg3)}
+.msg-ctx-item.danger{color:var(--red)}
+.msg-ctx-item i{width:14px;text-align:center;font-size:11px}
+.date-sep{text-align:center;font-size:10px;color:var(--text3);padding:7px;position:relative}
+.date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+.date-sep span{background:var(--bg);padding:0 10px;position:relative}
+.msg-image{max-width:240px;width:100%;border-radius:10px;display:block;cursor:pointer;transition:.15s;border:2px solid rgba(255,255,255,.07)}
+.msg-image:hover{transform:scale(1.02);border-color:var(--accent)}
+#attach-preview-bar{padding:7px 12px;background:var(--surface);border-top:1px solid var(--border);display:none;align-items:center;gap:9px;flex-shrink:0}
+.ap-thumb{width:40px;height:40px;border-radius:7px;object-fit:cover;border:1px solid var(--border)}
+.ap-thumb-file{width:40px;height:40px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent)}
+.ap-name{flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ap-size{font-size:10px;color:var(--text3);flex-shrink:0}
+.ap-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;padding:0 3px}
+.ap-remove:hover{color:var(--red)}
+#msg-search-bar{padding:7px 12px;background:var(--surface);border-bottom:1px solid var(--border);display:none;align-items:center;gap:7px;flex-shrink:0}
+#msg-search-bar input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:6px 12px;font-size:12px;color:var(--text);outline:none;font-family:var(--font)}
+#msg-search-bar input:focus{border-color:var(--accent)}
+#msg-search-count{font-size:11px;color:var(--text3);white-space:nowrap}
+.msg-highlight{background:rgba(255,209,102,.3);border-radius:3px;padding:0 2px}
+.typing-dots{display:inline-flex;gap:4px;align-items:center;padding:9px 13px;background:var(--surface);border-radius:15px;border-bottom-left-radius:3px}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .8s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+#input-bar{padding:9px 14px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:flex-end;gap:9px;flex-shrink:0}
+#reply-preview-bar{padding:7px 12px;background:var(--surface);border-top:1px solid var(--border);display:none;align-items:center;gap:9px;font-size:12px;color:var(--text2);flex-shrink:0}
+#reply-preview-bar .rp-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#reply-preview-bar .rp-close{cursor:pointer;color:var(--text3);font-size:15px}
+#reply-preview-bar .rp-close:hover{color:var(--red)}
+#edit-preview-bar{padding:7px 12px;background:var(--bg3);border-top:1px solid var(--border);display:none;align-items:center;gap:9px;font-size:12px;color:var(--yellow);flex-shrink:0}
+#edit-preview-bar .ep-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#edit-preview-bar .ep-close{cursor:pointer;font-size:15px;color:var(--text3)}
+#edit-preview-bar .ep-close:hover{color:var(--red)}
+.input-wrap{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;padding:0 12px;gap:7px;min-height:40px;transition:.15s}
+.input-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px rgba(108,99,255,.12)}
+.input-wrap input{background:transparent;border:none;outline:none;flex:1;font-size:13px;color:var(--text);font-family:var(--font)}
+.input-wrap input::placeholder{color:var(--text3)}
+.send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7c3aed);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s;flex-shrink:0}
+.send-btn:hover{transform:scale(1.1)}
+.send-btn:active{transform:scale(.95)}
+.send-btn:disabled{background:var(--bg3);cursor:not-allowed;transform:none}
+.emoji-picker-wrap{font-size:18px;cursor:pointer;color:var(--text2);transition:.15s;padding:5px}
+.emoji-picker-wrap:hover{color:var(--accent)}
+.attach-btn{font-size:15px;cursor:pointer;color:var(--text2);transition:.15s;padding:5px}
+.attach-btn:hover{color:var(--accent)}
+.attach-btn.has-file{color:var(--accent)}
+#char-count{font-size:10px;color:var(--text3);flex-shrink:0}
+#char-count.warn{color:var(--yellow)}
+#char-count.over{color:var(--red)}
+#pinned-msg-bar{padding:7px 12px;background:rgba(108,99,255,.12);border-bottom:1px solid rgba(108,99,255,.25);display:none;align-items:center;gap:7px;cursor:pointer;flex-shrink:0}
+#pinned-msg-bar i{color:var(--accent);font-size:12px;flex-shrink:0}
+#pinned-msg-bar span{flex:1;font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pinned-msg-bar .unpin-btn{font-size:11px;color:var(--text3);cursor:pointer;background:none;border:none;padding:0 3px}
+#pinned-msg-bar .unpin-btn:hover{color:var(--red)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(6px)}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:18px;width:min(500px,100%);max-height:90vh;display:flex;flex-direction:column;animation:slideUp .28s ease;overflow:hidden}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.modal-header h5{font-size:15px;font-weight:700;flex:1}
+.modal-close{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.15s}
+.modal-close:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end;flex-shrink:0}
+.profile-avatar-section{display:flex;flex-direction:column;align-items:center;gap:7px;margin-bottom:18px}
+.profile-avatar-section .av-wrap{position:relative;width:88px;height:88px;cursor:pointer}
+.profile-avatar-section img{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--accent)}
+.profile-avatar-section .av-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;font-size:22px;color:#fff;flex-direction:column;gap:2px}
+.profile-avatar-section .av-wrap:hover .av-overlay{opacity:1}
+.profile-avatar-section .av-overlay span{font-size:10px;font-weight:700}
+.profile-avatar-section input[type=file]{display:none}
+.vpm-cover{height:72px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:12px 12px 0 0;margin:-18px -20px 0;position:relative}
+.vpm-cover-avatar{width:76px;height:76px;border-radius:50%;border:4px solid var(--bg2);position:absolute;bottom:-38px;left:50%;transform:translateX(-50%);object-fit:cover}
+.post-status-modal .type-tabs{display:flex;gap:5px;margin-bottom:14px;background:var(--bg3);border-radius:9px;padding:3px}
+.type-tab-btn{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:11px;font-weight:600;transition:.2s;background:transparent;color:var(--text2);font-family:var(--font)}
+.type-tab-btn.active{background:var(--accent);color:#fff}
+
+/* ── POST COMPOSE (modal) ── */
+#post-compose-modal .compose-who{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#post-compose-modal .compose-who img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+#post-compose-modal .compose-who-info h6{font-size:14px;font-weight:700}
+#post-compose-modal .compose-who-info small{font-size:11px;color:var(--text3)}
+#post-compose-modal .compose-textarea{width:100%;background:none;border:none;outline:none;font-size:16px;color:var(--text);font-family:var(--font);resize:none;min-height:100px;line-height:1.6}
+#post-compose-modal .compose-textarea::placeholder{color:var(--text3);font-size:16px}
+#post-compose-modal .compose-img-preview-wrap{margin-top:8px;position:relative;display:none}
+#post-compose-modal .compose-img-preview-wrap img{width:100%;max-height:240px;object-fit:cover;border-radius:10px;display:block}
+#post-compose-modal .compose-img-preview-wrap .remove-img{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+#post-compose-modal .compose-url-input{margin-top:8px;display:none}
+#post-compose-modal .compose-type-row{display:flex;gap:4px;border-top:1px solid var(--border);padding-top:10px;flex-wrap:wrap}
+.compose-type-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;font-family:var(--font)}
+.compose-type-btn:hover,.compose-type-btn.active{background:var(--surface2);color:var(--accent);border-color:var(--accent)}
+.compose-type-btn i{font-size:14px}
+
+/* ── REELS SCREEN ── */
+#reels-screen{position:fixed;inset:0;background:#000;z-index:400;display:none;flex-direction:column}
+#reels-topbar{position:absolute;top:0;left:0;right:0;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.7) 0%,transparent 100%)}
+#reels-topbar h4{font-family:var(--font2);font-size:18px;font-weight:700;color:#fff;flex:1}
+.reels-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+#reels-feed{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;height:100%}
+#reels-feed::-webkit-scrollbar{display:none}
+.reel-item{width:100%;height:100vh;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reel-video-wrap{width:100%;height:100%;position:relative}
+.reel-video-wrap iframe{width:100%;height:100%;border:none;position:absolute;inset:0}
+.reel-text-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg),var(--bg3));font-size:20px;font-weight:700;color:var(--text);text-align:center;padding:24px;position:absolute;inset:0}
+.reel-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:16px;align-items:center;z-index:5}
+.reel-act-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.reel-act-btn .rab-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.reel-act-btn .rab-icon:hover,.reel-act-btn .rab-icon.active{background:rgba(108,99,255,.6)}
+.reel-act-btn span{font-size:11px;color:#fff;font-weight:600}
+.reel-info{position:absolute;bottom:0;left:0;right:0;padding:16px 60px 16px 16px;background:linear-gradient(transparent,rgba(0,0,0,.8));z-index:5}
+.reel-info-user{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.reel-info-user img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5)}
+.reel-info-user strong{font-size:14px;font-weight:700;color:#fff}
+.reel-info-caption{font-size:13px;color:rgba(255,255,255,.85);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.reel-loading{display:flex;align-items:center;justify-content:height:100%;color:rgba(255,255,255,.4);font-size:14px;flex-direction:column;gap:10px}
+.reel-loading i{font-size:32px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── STORY VIEWER ── */
+#story-viewer{position:fixed;inset:0;background:#000;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center}
+.sv-progress{position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2)}
+.sv-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));width:0;animation:svprog 5s linear forwards}
+@keyframes svprog{to{width:100%}}
+.sv-header{position:absolute;top:10px;left:12px;right:48px;display:flex;align-items:center;gap:10px;z-index:2}
+.sv-content{max-width:min(420px,100vw);width:100%;position:relative}
+.sv-text-content{font-size:21px;font-weight:700;color:#fff;background:linear-gradient(135deg,rgba(108,99,255,.3),rgba(255,101,132,.2));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);padding:28px;border-radius:18px;line-height:1.5;text-align:center}
+.sv-reel-wrap{position:relative;width:100%;max-width:420px;border-radius:16px;overflow:hidden;background:#000}
+.sv-reel-wrap video{width:100%;max-height:72vh;display:block;object-fit:contain}
+.sv-reel-wrap iframe{width:100%;height:min(72vh,560px);display:block;border:none}
+.sv-caption{position:absolute;bottom:0;left:0;right:0;padding:18px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff;font-size:13px;line-height:1.5;border-radius:0 0 16px 16px}
+.sv-close{position:absolute;top:10px;right:12px;background:rgba(255,255,255,.15);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;z-index:2}
+.sv-close:hover{background:rgba(255,255,255,.3)}
+.sv-nav{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:2}
+.sv-nav-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:.15s}
+.sv-nav-btn:hover{background:rgba(255,255,255,.35)}
+#sv-bottom-bar{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.85));z-index:3;display:flex;flex-direction:column;gap:7px}
+.sv-reaction-row{display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap}
+.sv-reaction-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:3px 11px;font-size:13px;cursor:pointer;color:#fff;transition:.15s;backdrop-filter:blur(4px)}
+.sv-reaction-btn:hover,.sv-reaction-btn.active-rx{background:rgba(255,255,255,.3)}
+.sv-comment-input-row{display:flex;gap:7px}
+.sv-comment-input-row input{flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:7px 13px;font-size:12px;color:#fff;outline:none;font-family:var(--font)}
+.sv-comment-input-row input::placeholder{color:rgba(255,255,255,.5)}
+.sv-comment-send{background:var(--accent);border:none;border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+#sv-comments-list{max-height:100px;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
+.sv-comment-item{display:flex;gap:7px;align-items:flex-start;animation:msgIn .2s ease}
+.sv-comment-item img{width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.sv-comment-bubble{background:rgba(255,255,255,.12);border-radius:11px;padding:5px 9px;font-size:11px;color:#fff;line-height:1.4;flex:1}
+.sv-comment-bubble strong{font-size:10px;color:var(--accent2);display:block;margin-bottom:1px}
+
+/* ── IMAGE LIGHTBOX ── */
+#img-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:800;display:none;align-items:center;justify-content:center;cursor:zoom-out;flex-direction:column;gap:10px}
+#img-lightbox img{max-width:94vw;max-height:88vh;border-radius:9px;object-fit:contain}
+.lightbox-caption{font-size:13px;color:rgba(255,255,255,.6);max-width:500px;text-align:center}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:9000;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:10px 14px;min-width:240px;max-width:320px;animation:toastIn .28s ease;display:flex;align-items:flex-start;gap:9px;box-shadow:var(--shadow)}
+@keyframes toastIn{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+.toast-body p{font-size:12px;font-weight:700;margin-bottom:1px}
+.toast-body span{font-size:11px;color:var(--text2);line-height:1.4;display:block}
+.toast.fadeout{animation:toastOut .35s ease forwards;pointer-events:none}
+@keyframes toastOut{to{opacity:0;transform:translateX(36px)}}
+.toast-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.toast-close{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:13px;flex-shrink:0;padding:0 0 0 3px}
+.toast.toast-success{border-left:3px solid var(--green)}
+.toast.toast-error{border-left:3px solid var(--red)}
+.toast.toast-info{border-left:3px solid var(--accent)}
+.toast.toast-message{border-left:3px solid var(--yellow)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:36px 18px;color:var(--text3)}
+.empty-state i{font-size:32px;opacity:.4}
+.empty-state p{font-size:13px;text-align:center}
+.member-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border)}
+.member-row img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.member-row .mr-name{flex:1;font-size:12px;font-weight:600}
+.member-row .mr-role{font-size:10px;padding:2px 7px;border-radius:9px;background:var(--bg3);color:var(--text2)}
+
+/* ── LIGHT MODE ── */
+body.light{--bg:#f0f2f8;--bg2:#fff;--bg3:#f4f5fb;--bg4:#e8eaf5;--surface:#fff;--surface2:#e8eaf5;--border:#dde0f0;--text:#1a1d2e;--text2:#4a5070;--text3:#9ea3c0}
+body.light .received .msg-bubble{background:#e8eaf5}
+body.light .date-sep span{background:#f0f2f8}
+body.light .post-card{background:#fff}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  :root{--sidebar-w:100%}
+  #sidebar{position:fixed;inset:0;z-index:300;transform:translateX(-100%)}
+  #sidebar.open{transform:none}
+  #main{width:100%}
+  .mobile-menu-btn{display:flex!important}
+  #nf-feed{padding:8px}
+  .post-card{border-radius:10px}
+  .reel-item{height:100svh}
+  .nf-story-img-wrap{height:95px}
+}
+.mobile-menu-btn{display:none;background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:7px;cursor:pointer;align-items:center;justify-content:center;font-size:14px;transition:.15s}
+.mobile-menu-btn:hover{background:var(--surface);color:var(--text)}
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--bg2);border-top:1px solid var(--border);z-index:350;flex-direction:row}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--text3);transition:.15s;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;position:relative}
+.bnav-item.active{color:var(--accent)}
+.bnav-item i{font-size:18px}
+.bnav-badge{position:absolute;top:4px;right:calc(50% - 18px);background:var(--accent3);color:#fff;border-radius:9px;font-size:8px;font-weight:700;padding:1px 4px;min-width:13px;text-align:center;border:2px solid var(--bg2)}
+@media(max-width:700px){
+  #bottom-nav{display:flex}
+  #main{padding-bottom:56px}
+  #sidebar{padding-bottom:56px}
+}
+#chat-panel{display:flex;flex-direction:column;flex:1;overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="loader-logo"><i class="fas fa-comments"></i> Ronginbari</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div class="loader-text">লোড হচ্ছে...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-container"></div>
+
+<!-- IMAGE LIGHTBOX -->
+<div id="img-lightbox" onclick="this.style.display='none'">
+  <img id="img-lightbox-src" src="" alt="">
+  <div class="lightbox-caption" id="img-lightbox-cap"></div>
+</div>
+
+<!-- MSG CONTEXT MENU -->
+<div id="msg-ctx-menu" class="msg-ctx-menu hidden"></div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="hidden">
+  <div id="login-card" class="auth-panel">
+    <div class="auth-brand">
+      <div class="logo"><i class="fas fa-comments"></i> Ronginbari Network</div>
+      <p>বন্ধুদের সাথে যুক্ত থাকুন</p>
+    </div>
+    <div class="form-group"><label class="form-label">ইউজারনেম</label><input class="form-input" id="li-user" placeholder="আপনার ইউজারনেম" autocomplete="username"></div>
+    <div class="form-group"><label class="form-label">পাসওয়ার্ড</label>
+      <div style="position:relative"><input class="form-input" type="password" id="li-pass" placeholder="পাসওয়ার্ড" style="padding-right:40px">
+      <span onclick="togglePass('li-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text3);font-size:13px"><i class="fas fa-eye"></i></span></div>
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" id="login-btn"><i class="fas fa-sign-in-alt"></i> লগইন করুন</button>
+    <div class="auth-switch mt16">নতুন? <a href="#" onclick="showSignup();return false">অ্যাকাউন্ট তৈরি করুন</a></div>
+  </div>
+  <div id="signup-card" class="auth-panel hidden">
+    <div class="auth-brand"><div class="logo"><i class="fas fa-user-plus"></i> সাইনআপ</div></div>
+    <div class="avatar-upload-wrap">
+      <label class="avatar-upload-ring" for="su-img">
+        <img id="su-img-preview" src="https://ui-avatars.com/api/?name=?&background=6C63FF&color=fff&size=128" alt="">
+        <div class="cam-overlay"><i class="fas fa-camera"></i></div>
+        <input type="file" id="su-img" accept="image/*" onchange="previewImg(this,'su-img-preview')">
+      </label>
+      <span class="avatar-hint">ছবি আপলোড করুন (ঐচ্ছিক)</span>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ইউজারনেম</label><input class="form-input" id="su-user" placeholder="username"></div>
+      <div class="form-group"><label class="form-label">পাসওয়ার্ড</label><input class="form-input" type="password" id="su-pass" placeholder="password"></div>
+    </div>
+    <div class="form-group"><label class="form-label">ইমেইল</label><input class="form-input" type="email" id="su-email" placeholder="email@example.com"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ফোন</label><input class="form-input" id="su-phone" placeholder="+880..."></div>
+      <div class="form-group"><label class="form-label">ঠিকানা</label><input class="form-input" id="su-addr" placeholder="শহর, দেশ"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Bio</label><input class="form-input" id="su-bio" placeholder="নিজের সম্পর্কে..."></div>
+    <button class="btn btn-primary" onclick="doSignup()"><i class="fas fa-user-plus"></i> অ্যাকাউন্ট তৈরি করুন</button>
+    <div class="auth-switch mt16">আগেই আছে? <a href="#" onclick="showLogin();return false">লগইন করুন</a></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <img id="my-avatar" src="" alt="" loading="lazy">
+      <div style="flex:1;min-width:0">
+        <div id="my-name"></div>
+        <div id="my-short-status" style="font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px"></div>
+      </div>
+      <div id="my-status-dot"></div>
+      <div class="actions">
+        <button onclick="openProfileModal()" title="প্রোফাইল"><i class="fas fa-user-cog"></i></button>
+        <button onclick="toggleTheme()" id="theme-btn" title="থিম"><i class="fas fa-moon"></i></button>
+        <button onclick="toggleSound()" id="sound-btn" title="সাউন্ড" style="position:relative"><i class="fas fa-volume-high"></i></button>
+        <button onclick="doLogout()" title="লগআউট" style="color:var(--red)"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+    <div id="sidebar-tabs">
+      <div class="stab active" onclick="switchTab('chats')" id="tab-chats"><i class="fas fa-comment-dots"></i>চ্যাট</div>
+      <div class="stab" onclick="switchTab('groups')" id="tab-groups"><i class="fas fa-users"></i>গ্রুপ</div>
+      <div class="stab" onclick="switchTab('friends')" id="tab-friends"><i class="fas fa-user-friends"></i>বন্ধু</div>
+    </div>
+    <div class="sidebar-search">
+      <div class="search-box"><i class="fas fa-search"></i><input id="contact-search" placeholder="খুঁজুন..." oninput="filterContacts()"></div>
+    </div>
+    <div class="spanel active" id="panel-chats">
+      <div id="stories-bar">
+        <h6>স্ট্যাটাস</h6>
+        <div class="stories-scroll" id="stories-scroll">
+          <div class="story-item" onclick="openPostComposeModal()">
+            <div class="add-story-btn"><i class="fas fa-plus"></i></div>
+            <span class="story-name">পোস্ট করুন</span>
+          </div>
+        </div>
+      </div>
+      <div id="contact-list"></div>
+    </div>
+    <div class="spanel" id="panel-groups">
+      <button class="btn-create-group" onclick="openCreateGroupModal()"><i class="fas fa-plus"></i> নতুন গ্রুপ তৈরি করুন</button>
+      <div id="groups-list"></div>
+    </div>
+    <div class="spanel" id="panel-friends"><div id="friends-content"></div></div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- NEWS FEED -->
+    <div id="news-feed-screen" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <!-- Topbar -->
+      <div id="nf-topbar">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="nf-brand"><i class="fas fa-comments"></i> Ronginbari</div>
+        <div class="nf-corner-actions">
+          <button class="nf-corner-btn" onclick="openPostComposeModal()" title="পোস্ট করুন"><i class="fas fa-plus"></i></button>
+          <button class="nf-corner-btn" onclick="openReelsScreen()" title="রিলস"><i class="fas fa-film"></i></button>
+          <button class="nf-corner-btn" onclick="switchTab('friends');toggleSidebar()" title="বন্ধু অনুরোধ" id="nf-friend-btn"><i class="fas fa-user-friends"></i></button>
+          <button class="nf-corner-btn" onclick="openNotificationsPanel()" title="নোটিফিকেশন" id="nf-notif-btn"><i class="fas fa-bell"></i><span class="nbadge hidden" id="notif-badge">0</span></button>
+        </div>
+      </div>
+
+      <!-- Stories strip -->
+      <div id="nf-stories-strip">
+        <div class="nf-stories-scroll" id="nf-stories-scroll"></div>
+      </div>
+
+      <!-- Compose box -->
+      <div id="nf-composer">
+        <div class="nf-compose-top">
+          <img class="nf-compose-avatar" id="nf-my-avatar" src="" alt="" loading="lazy">
+          <div class="nf-compose-trigger" onclick="openPostComposeModal()">মনের কথা শেয়ার করুন... ✨</div>
+        </div>
+        <div class="nf-compose-divider"></div>
+        <div class="nf-compose-actions">
+          <div class="nf-compose-act" onclick="openPostComposeModal('image')"><i class="fas fa-image" style="color:var(--green)"></i> ছবি/ভিডিও</div>
+          <div class="nf-compose-act" onclick="openPostComposeModal('feel')"><i class="fas fa-face-smile" style="color:var(--yellow)"></i> অনুভূতি</div>
+          <div class="nf-compose-act" onclick="openPostComposeModal('youtube')"><i class="fab fa-youtube" style="color:var(--red)"></i> ভিডিও</div>
+        </div>
+      </div>
+
+      <!-- Feed scroll -->
+      <div id="nf-feed-wrap">
+        <div id="nf-feed">
+          <div class="empty-state" id="nf-loading"><i class="fas fa-spinner fa-spin"></i><p>ফিড লোড হচ্ছে...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT PANEL -->
+    <div id="chat-panel" class="hidden">
+      <div id="chat-header">
+        <button class="mobile-menu-btn" onclick="goBackToFeed()"><i class="fas fa-arrow-left"></i></button>
+        <img id="chat-header-avatar" src="" alt="" loading="lazy">
+        <div style="flex:1;min-width:0">
+          <div id="chat-header-name"></div>
+          <div id="chat-header-sub"></div>
+        </div>
+        <div class="hdr-actions">
+          <button class="hdr-btn" onclick="toggleMsgSearch()" title="সার্চ"><i class="fas fa-magnifying-glass"></i></button>
+          <button class="hdr-btn" onclick="openViewProfileModal()" title="প্রোফাইল"><i class="fas fa-user"></i></button>
+          <button class="hdr-btn" onclick="sendFriendReqFromChat()" id="btn-add-friend" title="বন্ধু যোগ"><i class="fas fa-user-plus"></i></button>
+          <button class="hdr-btn" onclick="blockUser()" title="ব্লক"><i class="fas fa-ban"></i></button>
+        </div>
+      </div>
+      <div id="pinned-msg-bar">
+        <i class="fas fa-thumbtack"></i>
+        <span id="pinned-msg-text"></span>
+        <button class="unpin-btn" onclick="unpinMessage()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="msg-search-bar">
+        <i class="fas fa-search" style="color:var(--text3);font-size:12px"></i>
+        <input id="msg-search-input" placeholder="মেসেজে খুঁজুন..." oninput="searchMessages()">
+        <span id="msg-search-count"></span>
+        <button class="hdr-btn" onclick="toggleMsgSearch()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="edit-preview-bar">
+        <i class="fas fa-pencil" style="color:var(--yellow)"></i>
+        <span class="ep-text" id="ep-text"></span>
+        <button class="ep-close" onclick="cancelEdit()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="reply-preview-bar">
+        <i class="fas fa-reply" style="color:var(--accent)"></i>
+        <span class="rp-text" id="rp-text"></span>
+        <button class="rp-close" onclick="cancelReply()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="attach-preview-bar">
+        <div id="ap-thumb-wrap"></div>
+        <span class="ap-name" id="ap-name"></span>
+        <span class="ap-size" id="ap-size"></span>
+        <button class="ap-remove" onclick="removeAttachment()"><i class="fas fa-times-circle"></i></button>
+      </div>
+      <div id="messages-area"></div>
+      <div id="typing-indicator" style="display:none;padding:7px 14px">
+        <div class="msg-wrapper received"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+      </div>
+      <div id="input-bar">
+        <span class="emoji-picker-wrap" onclick="toggleEmojiPicker()"><i class="fas fa-face-smile"></i></span>
+        <label class="attach-btn" id="attach-label" for="attach-file-input"><i class="fas fa-paperclip"></i></label>
+        <input type="file" id="attach-file-input" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf,.doc,.docx,.txt" style="display:none" onchange="handleFileAttach(this)">
+        <div class="input-wrap">
+          <input type="text" id="msg-input" placeholder="মেসেজ লিখুন..." maxlength="1000" onkeydown="handleMsgKey(event)" oninput="updateCharCount()">
+          <span id="char-count" style="display:none"></span>
+        </div>
+        <button class="send-btn" id="send-btn" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav">
+    <div class="bnav-item active" onclick="showNewsFeed()" id="bn-home"><i class="fas fa-home"></i>হোম</div>
+    <div class="bnav-item" onclick="openReelsScreen()" id="bn-reels"><i class="fas fa-film"></i>রিলস</div>
+    <div class="bnav-item" onclick="switchSidebarTab('chats')" id="bn-chat"><i class="fas fa-comment-dots"></i>চ্যাট<span class="bnav-badge hidden" id="bn-chat-badge">0</span></div>
+    <div class="bnav-item" onclick="switchSidebarTab('friends')" id="bn-friends"><i class="fas fa-user-friends"></i>বন্ধু</div>
+    <div class="bnav-item" onclick="openProfileModal()" id="bn-profile"><i class="fas fa-user"></i>প্রোফাইল</div>
+  </div>
+</div>
+
+<!-- EMOJI PANEL -->
+<div id="emoji-panel" style="position:fixed;bottom:66px;left:var(--sidebar-w);background:var(--surface2);border:1px solid var(--border);border-radius:15px;padding:10px;display:none;flex-wrap:wrap;gap:5px;max-width:268px;z-index:400;box-shadow:var(--shadow)">
+  <div style="width:100%;font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">ইমোজি</div>
+</div>
+
+<!-- REELS SCREEN -->
+<div id="reels-screen">
+  <div id="reels-topbar"><h4><i class="fas fa-film"></i> রিলস</h4><button class="reels-close" onclick="closeReelsScreen()"><i class="fas fa-times"></i></button></div>
+  <div id="reels-feed"></div>
+</div>
+
+<!-- POST COMPOSE MODAL (Facebook-style) -->
+<div class="modal-overlay hidden" id="post-compose-modal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <h5 style="text-align:center;flex:1"><i class="fas fa-pen-to-square"></i> পোস্ট তৈরি করুন</h5>
+      <button class="modal-close" onclick="closeModal('post-compose-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="padding:16px 18px">
+      <div class="compose-who">
+        <img id="cm-avatar" src="" alt="">
+        <div class="compose-who-info">
+          <h6 id="cm-name"></h6>
+          <small>🌏 পাবলিক</small>
+        </div>
+      </div>
+      <textarea class="compose-textarea" id="cm-text" placeholder="কী মনে চলছে? ✨" rows="4"></textarea>
+      <!-- Image preview -->
+      <div id="cm-img-preview-wrap" class="compose-img-preview-wrap">
+        <img id="cm-img-preview" src="" alt="">
+        <button class="remove-img" onclick="removeCmImg()"><i class="fas fa-times"></i></button>
+      </div>
+      <!-- YouTube preview -->
+      <div id="cm-yt-preview" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid var(--border)"></div>
+      <!-- URL input area (youtube) -->
+      <div class="compose-url-input" id="cm-url-area">
+        <input class="form-input" id="cm-url" placeholder="YouTube লিংক পেস্ট করুন..." oninput="previewCmYT(this.value)" style="font-size:13px">
+      </div>
+      <!-- Action buttons -->
+      <div class="compose-type-row" style="margin-top:12px">
+        <label class="compose-type-btn" for="cm-img-input"><i class="fas fa-image" style="color:var(--green)"></i> ছবি/ভিডিও<input type="file" id="cm-img-input" accept="image/*,video/*" style="display:none" onchange="handleCmImg(this)"></label>
+        <button class="compose-type-btn" id="cm-yt-btn" onclick="toggleCmYTArea()"><i class="fab fa-youtube" style="color:var(--red)"></i> YouTube</button>
+        <button class="compose-type-btn" onclick="insertCmEmoji()"><i class="fas fa-face-smile" style="color:var(--yellow)"></i> ইমোজি</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('post-compose-modal')">বাতিল</button>
+      <button class="btn btn-primary" onclick="submitCompose()" style="min-width:120px"><i class="fas fa-paper-plane"></i> পোস্ট করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay hidden" id="profile-modal">
+  <div class="modal-box">
+    <div class="modal-header"><h5><i class="fas fa-user-cog"></i> প্রোফাইল সম্পাদনা</h5><button class="modal-close" onclick="closeModal('profile-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="profile-avatar-section">
+        <label class="av-wrap" for="pm-img-file">
+          <img id="pm-avatar" src="" alt="">
+          <div class="av-overlay"><i class="fas fa-camera" style="font-size:24px"></i><span>বদলান</span></div>
+          <input type="file" id="pm-img-file" accept="image/*" onchange="previewImgWithCrop(this,'pm-avatar')">
+        </label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:5px">
+          <button onclick="document.getElementById('pm-img-file').click()" style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;color:var(--accent);cursor:pointer"><i class="fas fa-upload"></i> আপলোড</button>
+          <button onclick="generateAvatar()" style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer"><i class="fas fa-dice"></i> র‍্যান্ডম</button>
+          <button onclick="removeAvatar()" style="background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.2);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;color:var(--red);cursor:pointer"><i class="fas fa-trash"></i> সরান</button>
+        </div>
+      </div>
+      <input type="hidden" id="pm-old-username">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">ইউজারনেম</label><input class="form-input" id="pm-username"></div>
+        <div class="form-group"><label class="form-label">পাসওয়ার্ড</label><input class="form-input" type="password" id="pm-password"></div>
+      </div>
+      <div class="form-group"><label class="form-label">ইমেইল</label><input class="form-input" type="email" id="pm-email"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">ফোন</label><input class="form-input" id="pm-phone"></div>
+        <div class="form-group"><label class="form-label">ঠিকানা</label><input class="form-input" id="pm-address"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Bio</label><input class="form-input" id="pm-bio"></div>
+      <div class="form-group"><label class="form-label">শর্ট স্ট্যাটাস</label><input class="form-input" id="pm-short-status" placeholder="এখন কী করছেন? 😊"></div>
+      <div class="form-group"><label class="form-label">অনলাইন স্ট্যাটাস</label>
+        <select class="form-input" id="pm-online-status"><option value="Online">🟢 অনলাইন</option><option value="Offline">⚫ অফলাইন</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('profile-modal')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW PROFILE MODAL -->
+<div class="modal-overlay hidden" id="view-profile-modal">
+  <div class="modal-box">
+    <div class="modal-header"><h5 id="vpm-title">প্রোফাইল</h5><button class="modal-close" onclick="closeModal('view-profile-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" style="padding-top:0">
+      <div class="vpm-cover" id="vpm-cover"></div>
+      <div style="text-align:center;padding-top:46px;padding-bottom:14px;position:relative">
+        <img id="vpm-avatar" src="" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:4px solid var(--bg2);position:absolute;top:0;left:50%;transform:translateX(-50%) translateY(-50%)">
+        <h4 id="vpm-name" style="font-size:19px;font-weight:700;margin-top:6px"></h4>
+        <p id="vpm-status" style="font-size:12px;color:var(--accent2);margin-top:3px;font-weight:500"></p>
+        <p id="vpm-bio" style="font-size:12px;color:var(--text2);margin-top:9px;padding:0 14px;line-height:1.7"></p>
+        <div id="vpm-info" style="margin-top:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE GROUP MODAL -->
+<div class="modal-overlay hidden" id="create-group-modal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header"><h5><i class="fas fa-users"></i> নতুন গ্রুপ তৈরি</h5><button class="modal-close" onclick="closeModal('create-group-modal')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">গ্রুপের নাম</label><input class="form-input" id="cg-name"></div>
+      <div class="form-group"><label class="form-label">বিবরণ</label><input class="form-input" id="cg-desc"></div>
+      <div class="form-group">
+        <label class="form-label">সদস্য যোগ করুন</label>
+        <div id="cg-members-list" style="display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;margin-top:5px"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('create-group-modal')">বাতিল</button>
+      <button class="btn btn-primary" onclick="createGroup()"><i class="fas fa-plus"></i> তৈরি করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- STORY VIEWER -->
+<div id="story-viewer">
+  <div class="sv-progress"><div class="sv-progress-fill" id="sv-prog"></div></div>
+  <div class="sv-header">
+    <img id="sv-avatar" src="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5)" loading="lazy">
+    <div>
+      <div id="sv-username" style="font-size:13px;font-weight:700;color:#fff"></div>
+      <div id="sv-time" style="font-size:10px;color:rgba(255,255,255,.6)"></div>
+    </div>
+    <div style="display:flex;gap:7px;z-index:2;margin-left:auto">
+      <button class="sv-nav-btn" onclick="svPrev()"><i class="fas fa-chevron-left"></i></button>
+      <button class="sv-nav-btn" onclick="svNext()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+  <div class="sv-content" id="sv-content"></div>
+  <button class="sv-close" onclick="closeStoryViewer()"><i class="fas fa-times"></i></button>
+  <div id="sv-bottom-bar">
+    <div id="sv-reaction-row" class="sv-reaction-row"></div>
+    <div id="sv-comments-list"></div>
+    <div class="sv-comment-input-row">
+      <input id="sv-comment-input" placeholder="কমেন্ট করুন..." onkeydown="if(event.key==='Enter')svSendComment()">
+      <button class="sv-comment-send" onclick="svSendComment()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// GAS DETECTION
+// ============================================================
+var IS_GAS=(function(){try{return typeof google!=='undefined'&&!!google.script&&!!google.script.run;}catch(e){return false;}})();
+
+// ============================================================
+// MOCK DATA
+// ============================================================
+var MOCK_USERS=[
+  {username:'আলী',password:'1234',email:'ali@email.com',address:'ঢাকা',phone:'01711-111111',allowed:'Yes',onlineStatus:'Online',imageUrl:'https://ui-avatars.com/api/?name=%E0%A6%86%E0%A6%B2%E0%A7%80&background=6C63FF&color=fff&size=128',bio:'ডেভেলপার ও প্রযুক্তিপ্রেমী',shortStatus:'কোডিং করছি 💻'},
+  {username:'রাহেলা',password:'1234',email:'rahela@email.com',address:'চট্টগ্রাম',phone:'01811-222222',allowed:'Yes',onlineStatus:'Online',imageUrl:'https://ui-avatars.com/api/?name=%E0%A6%B0%E0%A6%BE%E0%A6%B9%E0%A7%87%E0%A6%B2%E0%A6%BE&background=ff6584&color=fff&size=128',bio:'ফটোগ্রাফার ও আর্টিস্ট',shortStatus:'ছবি তুলছি 📸'},
+  {username:'করিম',password:'1234',email:'karim@email.com',address:'সিলেট',phone:'01911-333333',allowed:'Yes',onlineStatus:'Offline',imageUrl:'https://ui-avatars.com/api/?name=%E0%A6%95%E0%A6%B0%E0%A6%BF%E0%A6%AE&background=22d37a&color=fff&size=128',bio:'শিক্ষক ও লেখক',shortStatus:'পড়াচ্ছি 📚'},
+  {username:'সুমাইয়া',password:'1234',email:'sumaiya@email.com',address:'রাজশাহী',phone:'01611-444444',allowed:'Yes',onlineStatus:'Online',imageUrl:'https://ui-avatars.com/api/?name=%E0%A6%B8%E0%A7%81%E0%A6%AE%E0%A6%BE%E0%A6%87%E0%A6%AF%E0%A6%BC%E0%A6%BE&background=ffd166&color=333&size=128',bio:'ডিজাইনার',shortStatus:'ডিজাইন করছি 🎨'},
+];
+var MOCK_MSGS={};
+var MOCK_STATUSES=[
+  {statusId:'s1',username:'আলী',type:'text',content:'আজকে অনেক ভালো লাগছে! ☀️ সবাই কেমন আছেন? অনেকদিন পর সবার সাথে কথা হচ্ছে, দারুণ লাগছে!',videoUrl:'',imageUrl:'',timestamp:new Date(Date.now()-3600000).toISOString(),views:5,comments:2,reactionCounts:{'❤️':3,'😂':1,'👍':2},totalReactions:6},
+  {statusId:'s2',username:'রাহেলা',type:'youtube',content:'সুন্দর একটা ভিডিও শেয়ার করছি 🎬 দেখো কেমন লাগে!',videoUrl:'https://youtube.com/watch?v=dQw4w9WgXcQ',imageUrl:'',timestamp:new Date(Date.now()-7200000).toISOString(),views:8,comments:1,reactionCounts:{'🔥':2,'❤️':1},totalReactions:3},
+  {statusId:'s3',username:'সুমাইয়া',type:'image',content:'নতুন ডিজাইন শেষ করলাম 🎨✨ কেমন লাগলো জানাবেন!',videoUrl:'',imageUrl:'https://picsum.photos/seed/design/600/400',timestamp:new Date(Date.now()-1800000).toISOString(),views:3,comments:0,reactionCounts:{'❤️':5,'🔥':3},totalReactions:8},
+  {statusId:'s4',username:'করিম',type:'youtube',content:'শিক্ষামূলক ভিডিও 📚 সবার কাজে লাগবে ইনশাআল্লাহ',videoUrl:'https://youtube.com/watch?v=9bZkp7q19f0',imageUrl:'',timestamp:new Date(Date.now()-900000).toISOString(),views:12,comments:3,reactionCounts:{'👍':5,'❤️':2,'😮':1},totalReactions:8},
+  {statusId:'s5',username:'রাহেলা',type:'image',content:'আজকের সকালটা অসাধারণ ছিল 🌅',videoUrl:'',imageUrl:'https://picsum.photos/seed/morning/600/400',timestamp:new Date(Date.now()-500000).toISOString(),views:15,comments:4,reactionCounts:{'❤️':12,'😍':6,'🔥':3},totalReactions:21},
+  {statusId:'s6',username:'আলী',type:'text',content:'নতুন প্রোজেক্ট শুরু করেছি! JavaScript দিয়ে কিছু মজার জিনিস বানাচ্ছি 💻🚀 শীঘ্রই শেয়ার করবো!',videoUrl:'',imageUrl:'',timestamp:new Date(Date.now()-200000).toISOString(),views:7,comments:1,reactionCounts:{'🔥':8,'👍':4,'❤️':2},totalReactions:14},
+];
+var MOCK_GROUPS=[
+  {groupId:'g1',name:'পরিবার গ্রুপ',creator:'আলী',description:'পারিবারিক আড্ডা 👨‍👩‍👧‍👦',createdAt:new Date().toISOString(),imageUrl:''},
+  {groupId:'g2',name:'বন্ধুদের দল',creator:'রাহেলা',description:'বন্ধুরা মিলে মজা করি 🎉',createdAt:new Date().toISOString(),imageUrl:''},
+];
+var MOCK_REACTIONS={'m1':{'❤️':2},'m3':{'🔥':1,'👍':1}};
+var MOCK_STATUS_REACTIONS={
+  's1':{counts:{'❤️':3,'😂':1,'👍':2},users:{'আলী':'❤️','করিম':'😂'}},
+  's2':{counts:{'🔥':2,'❤️':1},users:{'সুমাইয়া':'🔥'}},
+  's3':{counts:{'❤️':5,'🔥':3},users:{}},
+  's5':{counts:{'❤️':12,'😍':6,'🔥':3},users:{}},
+};
+var MOCK_STATUS_COMMENTS={
+  's1':[
+    {commentId:'sc1',statusId:'s1',username:'রাহেলা',comment:'দারুণ! 🎉 সত্যিই ভালো লাগছে',timestamp:new Date(Date.now()-3000000).toISOString()},
+    {commentId:'sc2',statusId:'s1',username:'করিম',comment:'ভালো লাগলো 👍 আরও পোস্ট দাও',timestamp:new Date(Date.now()-2000000).toISOString()},
+  ],
+  's4':[
+    {commentId:'sc3',statusId:'s4',username:'আলী',comment:'অসাধারণ ভিডিও ভাই! 🔥',timestamp:new Date(Date.now()-800000).toISOString()},
+    {commentId:'sc4',statusId:'s4',username:'সুমাইয়া',comment:'শেয়ার করার জন্য ধন্যবাদ ❤️',timestamp:new Date(Date.now()-700000).toISOString()},
+    {commentId:'sc5',statusId:'s4',username:'রাহেলা',comment:'বুকমার্ক করলাম 📌',timestamp:new Date(Date.now()-600000).toISOString()},
+  ],
+  's5':[
+    {commentId:'sc6',statusId:'s5',username:'করিম',comment:'অসাধারণ সকাল! 🌅',timestamp:new Date(Date.now()-400000).toISOString()},
+    {commentId:'sc7',statusId:'s5',username:'আলী',comment:'তুমি কোথায় ছিলে? 😍',timestamp:new Date(Date.now()-350000).toISOString()},
+  ],
+};
+MOCK_MSGS['আলী']=[
+  {sender:'আলী',receiver:'demo',message:'হ্যালো! কেমন আছেন? 👋',timestamp:new Date(Date.now()-3600000).toISOString(),status:'Read',replyTo:'',msgId:'m1',fileData:'',fileName:''},
+  {sender:'demo',receiver:'আলী',message:'ভালো আছি, ধন্যবাদ! আপনি? 😊',timestamp:new Date(Date.now()-3500000).toISOString(),status:'Read',replyTo:'',msgId:'m2',fileData:'',fileName:''},
+  {sender:'আলী',receiver:'demo',message:'আমিও ভালো! Ronginbari Network অনেক সুন্দর হয়েছে 🔥',timestamp:new Date(Date.now()-60000).toISOString(),status:'Delivered',replyTo:'',msgId:'m3',fileData:'',fileName:''},
+];
+MOCK_MSGS['রাহেলা']=[
+  {sender:'রাহেলা',receiver:'demo',message:'নতুন ছবি তুলেছি! দেখতে চাও? 📸',timestamp:new Date(Date.now()-1800000).toISOString(),status:'Read',replyTo:'',msgId:'m4',fileData:'',fileName:''},
+];
+var REEL_SOURCES=[
+  {statusId:'r1',username:'আলী',content:'দারুণ একটা মুহূর্ত 🔥',videoUrl:'https://youtube.com/watch?v=dQw4w9WgXcQ',views:120,reactionCounts:{'❤️':45,'🔥':23}},
+  {statusId:'r2',username:'রাহেলা',content:'আজকের ভিডিও 🎬',videoUrl:'https://youtube.com/watch?v=9bZkp7q19f0',views:89,reactionCounts:{'😂':12,'👍':34}},
+  {statusId:'r3',username:'করিম',content:'শিক্ষামূলক কন্টেন্ট 📚',videoUrl:'https://youtube.com/watch?v=ysz5S6PUM-U',views:67,reactionCounts:{'❤️':19}},
+];
+var MOCK={
+  getContacts:function(){return JSON.parse(JSON.stringify(MOCK_USERS));},
+  getMessages:function(u1,u2){var msgs=MOCK_MSGS[u2]||MOCK_MSGS[u1]||[];return JSON.parse(JSON.stringify(msgs));},
+  sendMessage:function(s,r,m,ts,rt,fd,fn){var id='m'+Date.now();var obj={sender:s,receiver:r,message:m,timestamp:ts,status:'Sent',replyTo:rt||'',msgId:id,fileData:fd||'',fileName:fn||''};if(!MOCK_MSGS[r])MOCK_MSGS[r]=[];MOCK_MSGS[r].push(JSON.parse(JSON.stringify(obj)));return{success:true,msgId:id};},
+  deleteMessage:function(msgId,username){Object.keys(MOCK_MSGS).forEach(function(k){MOCK_MSGS[k]=MOCK_MSGS[k].filter(function(m){return!(m.msgId===msgId&&m.sender===username);});});return{success:true};},
+  editMessage:function(msgId,username,newMsg){var found=false;Object.keys(MOCK_MSGS).forEach(function(k){MOCK_MSGS[k].forEach(function(m){if(m.msgId===msgId&&m.sender===username){m.message=newMsg+' ✏️';found=true;}});});return{success:found};},
+  getReactions:function(msgIds){var res={};(msgIds||[]).forEach(function(id){if(MOCK_REACTIONS[id])res[id]=MOCK_REACTIONS[id];});return res;},
+  addReaction:function(msgId,username,emoji){if(!MOCK_REACTIONS[msgId])MOCK_REACTIONS[msgId]={};MOCK_REACTIONS[msgId][emoji]=(MOCK_REACTIONS[msgId][emoji]||0)+1;return{success:true};},
+  markMessagesAsRead:function(){return null;},
+  getUnreadCountForUser:function(){return{};},
+  getUnreadMessages:function(){return[];},
+  getUserGroups:function(){return JSON.parse(JSON.stringify(MOCK_GROUPS));},
+  getGroupMessages:function(){return[];},
+  sendGroupMessage:function(){return{success:true};},
+  getActiveStatuses:function(){return JSON.parse(JSON.stringify(MOCK_STATUSES));},
+  postStatus:function(u,t,c,v,img){MOCK_STATUSES.unshift({statusId:'s'+Date.now(),username:u,type:t,content:c,videoUrl:v||'',imageUrl:img||'',timestamp:new Date().toISOString(),views:0,comments:0,reactionCounts:{},totalReactions:0});return{success:true};},
+  deleteStatus:function(id){var i=MOCK_STATUSES.findIndex(function(s){return s.statusId===id;});if(i>-1)MOCK_STATUSES.splice(i,1);return{success:true};},
+  addStatusReaction:function(statusId,username,emoji){if(!MOCK_STATUS_REACTIONS[statusId])MOCK_STATUS_REACTIONS[statusId]={counts:{},users:{}};var rx=MOCK_STATUS_REACTIONS[statusId];var old=rx.users[username];if(old===emoji){delete rx.users[username];rx.counts[emoji]=Math.max(0,(rx.counts[emoji]||1)-1);return{success:true,action:'removed'};}if(old){rx.counts[old]=Math.max(0,(rx.counts[old]||1)-1);}rx.users[username]=emoji;rx.counts[emoji]=(rx.counts[emoji]||0)+1;return{success:true,action:old?'updated':'added'};},
+  getStatusReactions:function(ids){var res={};(ids||[]).forEach(function(id){if(MOCK_STATUS_REACTIONS[id])res[id]=MOCK_STATUS_REACTIONS[id];});return res;},
+  addStatusComment:function(statusId,username,comment){if(!MOCK_STATUS_COMMENTS[statusId])MOCK_STATUS_COMMENTS[statusId]=[];var id='sc'+Date.now();MOCK_STATUS_COMMENTS[statusId].push({commentId:id,statusId:statusId,username:username,comment:comment,timestamp:new Date().toISOString()});return{success:true,commentId:id};},
+  getStatusComments:function(statusId){return JSON.parse(JSON.stringify(MOCK_STATUS_COMMENTS[statusId]||[]));},
+  deleteStatusComment:function(commentId,username){Object.keys(MOCK_STATUS_COMMENTS).forEach(function(k){MOCK_STATUS_COMMENTS[k]=MOCK_STATUS_COMMENTS[k].filter(function(c){return!(c.commentId===commentId&&c.username===username);});});return{success:true};},
+  recordStatusView:function(statusId,username){var s=MOCK_STATUSES.find(function(x){return x.statusId===statusId;});if(s){s.views=(s.views||0)+1;}return{success:true,alreadyViewed:false};},
+  getStatusViewCounts:function(ids){var res={};MOCK_STATUSES.forEach(function(s){if((ids||[]).indexOf(s.statusId)>-1)res[s.statusId]=s.views||0;});return res;},
+  getFriendsData:function(){return{friends:['আলী','সুমাইয়া'],pending:[],requests:[{id:'fr1',from:'রাহেলা'}]};},
+  sendFriendRequest:function(){return{success:true,message:'বন্ধু অনুরোধ পাঠানো হয়েছে'};},
+  respondFriendRequest:function(){return{success:true};},
+  removeFriend:function(){return{success:true};},
+  createGroup:function(creator,name,desc){var gId='g'+Date.now();MOCK_GROUPS.push({groupId:gId,name:name,creator:creator,description:desc||'',createdAt:new Date().toISOString(),imageUrl:''});return{success:true,groupId:gId};},
+  addGroupMember:function(){return{success:true};},
+  updateUserProfile:function(d){var u=MOCK_USERS.find(function(x){return x.username===d.oldUsername;});if(u){u.username=d.newUsername;if(d.password)u.password=d.password;u.email=d.email;u.address=d.address;u.phone=d.phone;u.bio=d.bio;u.shortStatus=d.shortStatus;u.onlineStatus=d.onlineStatus;if(d.imageBase64)u.imageUrl=d.imageBase64;}return{success:true,message:'প্রোফাইল আপডেট হয়েছে',imageUrl:d.imageBase64||(u?u.imageUrl:'')};},
+  login:function(u,p){var usr=MOCK_USERS.find(function(x){return x.username===u&&x.password===p;});if(usr){usr.onlineStatus='Online';return{success:true};}return{success:false,message:'ভুল ইউজারনেম বা পাসওয়ার্ড'};},
+  signup:function(d){if(MOCK_USERS.find(function(x){return x.username===d.username;}))return{success:false,message:'ইউজারনেম ইতিমধ্যে বিদ্যমান'};MOCK_USERS.push({username:d.username,password:d.password,email:d.email,address:d.address||'',phone:d.phone||'',allowed:'Yes',onlineStatus:'Offline',imageUrl:d.imageBase64||'https://ui-avatars.com/api/?name='+encodeURIComponent(d.username)+'&background=6C63FF&color=fff&size=128',bio:d.bio||'',shortStatus:''});return{success:true,message:'সাইনআপ সফল হয়েছে'};},
+  logout:function(u){var usr=MOCK_USERS.find(function(x){return x.username===u;});if(usr)usr.onlineStatus='Offline';return null;},
+};
+
+// আপনার GAS URL এখানে বসান
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbxCZ7s2ySuejzU630MEcQO-tuSbX9-HZtyBT1pG4QJmeo_ROQD2U4mo92e3Z_ToL_dq-w/exec';
+
+function gasCall(method, args, onSuccess, onFailure) {
+  args = args || [];
+  onFailure = onFailure || function(e) {
+    console.error('API Error:', e);
+  };
+
+  // args থেকে object বানাও
+  var payload = buildPayload(method, args);
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain' }
+    // GAS CORS এর জন্য text/plain ব্যবহার করতে হয়
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) { onSuccess(data); })
+  .catch(function(err) { onFailure(err); });
+}
+
+// method + args → object
+function buildPayload(method, args) {
+  var p = { action: method };
+
+  var map = {
+    login:               ['username','password'],
+    signup:              ['data'],
+    getMessages:         ['u1','u2'],
+    sendMessage:         ['sender','receiver','message',
+                          'timestamp','replyTo','fileData','fileName'],
+    deleteMessage:       ['msgId','username'],
+    editMessage:         ['msgId','username','newMessage'],
+    getReactions:        ['msgIds'],
+    addReaction:         ['msgId','username','emoji'],
+    markMessagesAsRead:  ['sender','receiver'],
+    getUnreadCountForUser:['username'],
+    getUnreadMessages:   ['username'],
+    getUserGroups:       ['username'],
+    getGroupMessages:    ['groupId'],
+    sendGroupMessage:    ['groupId','sender','message','timestamp'],
+    createGroup:         ['creator','name','description'],
+    addGroupMember:      ['groupId','member','addedBy'],
+    getActiveStatuses:   [],
+    postStatus:          ['username','type','content',
+                          'videoUrl','imageUrl'],
+    deleteStatus:        ['statusId','username'],
+    addStatusReaction:   ['statusId','username','emoji'],
+    getStatusReactions:  ['ids'],
+    addStatusComment:    ['statusId','username','comment'],
+    getStatusComments:   ['statusId'],
+    deleteStatusComment: ['commentId','username'],
+    recordStatusView:    ['statusId','username'],
+    getFriendsData:      ['username'],
+    sendFriendRequest:   ['from','to'],
+    respondFriendRequest:['requestId','action'],
+    removeFriend:        ['username','friend'],
+    updateUserProfile:   ['data'],
+    logout:              ['username'],
+  };
+
+  var keys = map[method] || [];
+  keys.forEach(function(key, i) {
+    if (args[i] !== undefined) p[key] = args[i];
+  });
+
+  return p;
+}
+
+// STATE
+var currentUser='',currentUserData=null,allUsers=[];
+var connectedUser='',connectedGroup='',chatType='dm';
+var unreadCounts={},pollTimer=null,replyTo=null;
+var myGroups=[],activeStatuses=[];
+var friendsData={friends:[],pending:[],requests:[]};
+var selectedGroupMembers=[];
+var attachedFile=null;
+var soundEnabled=true;
+var editingMsgId=null;
+var pinnedMsg=null;
+var svList=[],svIdx=0,svTimer=null,svCurrentStatusId=null;
+// Per-post state
+var postReactions={};// postId -> my emoji
+var postCommentState={};// postId -> {open, comments}
+var cmImgData=null,cmYTAreaVisible=false;
+var EMOJIS=['😀','😂','❤️','🔥','👍','🎉','😢','😍','🙏','💯','😎','🥳','😴','🤔','👏','💪','😊','🤣','😭','🫂','✨','💀','🎯','💡','🌟','💕','😅','🤩','😆','🥰','😋','🤗','👀','🎊','🫡','❄️','⚡','🌈','💎','🎵'];
+var STATUS_REACTION_EMOJIS=['❤️','🔥','😂','😮','👏','🥰','😢','🎉'];
+// Full reaction set for posts
+var POST_REACTIONS=[
+  {emoji:'👍',label:'লাইক',color:'#4facfe'},
+  {emoji:'❤️',label:'ভালোবাসা',color:'#ff4757'},
+  {emoji:'😂',label:'হাসি',color:'#ffd166'},
+  {emoji:'😮',label:'অবাক',color:'#ffd166'},
+  {emoji:'😢',label:'দুঃখ',color:'#4facfe'},
+  {emoji:'😡',label:'রাগ',color:'#ff6584'},
+];
+
+// BOOT
+window.addEventListener('load',function(){
+  if(localStorage.getItem('sc_theme')==='light')document.body.classList.add('light');
+  soundEnabled=localStorage.getItem('sc_sound')!=='off';
+  updateSoundBtn();buildEmojiPanel();
+  var saved=sessionStorage.getItem('sc_user');
+  if(saved){currentUser=saved;initApp();}
+  else{hideOverlay();showAuth();setupAuthKeys();}
+});
+
+function hideOverlay(){var ol=document.getElementById('loading-overlay');ol.classList.add('fade-out');setTimeout(function(){ol.style.display='none';},420);}
+function showOverlay(){var ol=document.getElementById('loading-overlay');ol.style.display='flex';ol.classList.remove('fade-out');}
+function showAuth(){document.getElementById('auth-screen').classList.remove('hidden');document.getElementById('auth-screen').style.display='flex';}
+function hideAuth(){document.getElementById('auth-screen').classList.add('hidden');}
+function setupAuthKeys(){
+  var lp=document.getElementById('li-pass'),lu=document.getElementById('li-user');
+  if(lp)lp.addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+  if(lu)lu.addEventListener('keydown',function(e){if(e.key==='Enter')lp&&lp.focus();});
+}
+function buildEmojiPanel(){
+  var ep=document.getElementById('emoji-panel');
+  EMOJIS.forEach(function(e){
+    var span=document.createElement('span');
+    span.textContent=e;span.style.cssText='font-size:21px;cursor:pointer;transition:.12s;display:inline-block;line-height:1';
+    span.onclick=function(){insertEmoji(e);};
+    span.onmouseover=function(){this.style.transform='scale(1.4)';};
+    span.onmouseout=function(){this.style.transform='scale(1)';};
+    ep.appendChild(span);
+  });
+}
+
+function initApp(){
+  var timeout=setTimeout(function(){hideOverlay();showAuth();setupAuthKeys();toast('error','টাইমআউট','পেজ রিফ্রেশ করুন');},12000);
+  gasCall('getContacts',[],function(contacts){
+    clearTimeout(timeout);
+    try{
+      allUsers=Array.isArray(contacts)?contacts.filter(function(u){return u.allowed==='Yes';}):[]; 
+      currentUserData=allUsers.find(function(u){return u.username===currentUser;});
+      if(!currentUserData){sessionStorage.removeItem('sc_user');hideOverlay();showAuth();setupAuthKeys();return;}
+      updateSidebarHeader();renderContacts();loadMyGroups();loadStatuses();loadFriends();
+      hideOverlay();hideAuth();show('app');
+      buildNewsFeed();startPolling();
+    }catch(e){clearTimeout(timeout);console.error('initApp error:',e);hideOverlay();showAuth();setupAuthKeys();}
+  },function(){clearTimeout(timeout);hideOverlay();showAuth();setupAuthKeys();});
+}
+
+// AUTH
+function showSignup(){hide('login-card');show('signup-card');}
+function showLogin(){hide('signup-card');show('login-card');}
+function togglePass(id,btn){var inp=document.getElementById(id),h=inp.type==='password';inp.type=h?'text':'password';btn.innerHTML=h?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>';}
+function doLogin(){
+  var u=v('li-user'),p=v('li-pass');
+  if(!u)return flashError('li-user','ইউজারনেম দিন');
+  if(!p)return flashError('li-pass','পাসওয়ার্ড দিন');
+  var btn=document.getElementById('login-btn');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> লগইন হচ্ছে...';
+  gasCall('login',[u,p],function(r){
+    btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> লগইন করুন';
+    if(r&&r.success){currentUser=u;sessionStorage.setItem('sc_user',u);showOverlay();hideAuth();initApp();}
+    else toast('error','লগইন ব্যর্থ',r?(r.message||'ভুল তথ্য'):'সার্ভার সাড়া দেয়নি');
+  },function(){btn.disabled=false;btn.innerHTML='<i class="fas fa-sign-in-alt"></i> লগইন করুন';});
+}
+function doSignup(){
+  var u=v('su-user'),p=v('su-pass'),e=v('su-email'),ph=v('su-phone'),a=v('su-addr'),bio=v('su-bio');
+  if(!u)return flashError('su-user','ইউজারনেম দিন');
+  if(!p||p.length<4)return toast('error','ত্রুটি','পাসওয়ার্ড কমপক্ষে ৪ অক্ষর');
+  if(!e||!e.includes('@'))return flashError('su-email','সঠিক ইমেইল দিন');
+  var imgFile=document.getElementById('su-img').files[0];
+  function submit(b64){gasCall('signup',[{username:u,password:p,email:e,address:a||'',phone:ph||'',bio:bio,imageBase64:b64||null}],function(r){if(r&&r.success){toast('success','সফল',r.message||'');showLogin();}else toast('error','ত্রুটি',r?(r.message||''):'');},function(){toast('error','সার্ভার ত্রুটি','');});}
+  if(imgFile)readFile(imgFile,submit);else submit(null);
+}
+function doLogout(){
+  Swal.fire({title:'লগআউট?',text:'আপনি কি সত্যিই বের হতে চান?',icon:'question',showCancelButton:true,confirmButtonText:'হ্যাঁ',cancelButtonText:'না',background:'var(--bg2)',color:'var(--text)',confirmButtonColor:'var(--red)',cancelButtonColor:'var(--border)'})
+  .then(function(r){if(r.isConfirmed){gasCall('logout',[currentUser],function(){},function(){});clearInterval(pollTimer);sessionStorage.removeItem('sc_user');location.reload();}});
+}
+
+// SIDEBAR HEADER
+function updateSidebarHeader(){
+  if(!currentUserData)return;
+  var av=document.getElementById('my-avatar');
+  av.src=currentUserData.imageUrl||defaultAvatar(currentUser);
+  av.onerror=function(){this.src=defaultAvatar(currentUser);this.onerror=null;};
+  document.getElementById('my-name').textContent=currentUserData.username;
+  document.getElementById('my-short-status').textContent=currentUserData.shortStatus||'';
+  document.getElementById('my-status-dot').style.background=currentUserData.onlineStatus==='Online'?'var(--green)':'var(--text3)';
+  var nfav=document.getElementById('nf-my-avatar');
+  if(nfav){nfav.src=currentUserData.imageUrl||defaultAvatar(currentUser);nfav.onerror=function(){this.src=defaultAvatar(currentUser);this.onerror=null;};}
+}
+function defaultAvatar(name){return 'https://ui-avatars.com/api/?name='+encodeURIComponent(name||'?')+'&background=6C63FF&color=fff&size=128';}
+
+// CONTACTS
+function renderContacts(){
+  var query=v('contact-search').toLowerCase();
+  var el=document.getElementById('contact-list');
+  var filtered=allUsers.filter(function(u){return u.username!==currentUser&&u.username.toLowerCase().includes(query);});
+  if(!filtered.length){el.innerHTML='<div class="empty-state"><i class="fas fa-user-slash"></i><p>কোনো পরিচিতি নেই</p></div>';renderStoriesBar();return;}
+  el.innerHTML='';
+  filtered.forEach(function(u){
+    var uc=unreadCounts[u.username]||0;
+    var div=document.createElement('div');
+    div.className='contact-item'+(connectedUser===u.username&&chatType==='dm'?' active':'');
+    div.onclick=function(){openDM(u.username);};
+    var lastMsg='';var msgs=MOCK_MSGS[u.username]||[];if(msgs.length){var lm=msgs[msgs.length-1];lastMsg=(lm.message||'').substring(0,30);}
+    div.innerHTML='<div class="ci-avatar"><img src="'+escAttr(u.imageUrl||defaultAvatar(u.username))+'" loading="lazy" onerror="this.src=\''+defaultAvatar(u.username)+'\';this.onerror=null">'+
+      '<div class="ci-dot '+(u.onlineStatus==='Online'?'online':'offline')+'"></div></div>'+
+      '<div class="ci-info"><h6>'+esc(u.username)+'</h6>'+
+      '<p>'+esc(lastMsg||u.shortStatus||(u.onlineStatus==='Online'?'🟢 অনলাইন':'⚫ অফলাইন'))+'</p></div>'+
+      (uc>0?'<div class="ci-badge"><span class="badge">'+(uc>99?'99+':uc)+'</span></div>':'');
+    el.appendChild(div);
+  });
+  renderStoriesBar();
+}
+function filterContacts(){renderContacts();}
+
+// STORIES BAR (sidebar)
+function renderStoriesBar(){
+  var wrap=document.getElementById('stories-scroll');
+  wrap.innerHTML='<div class="story-item" onclick="openPostComposeModal()"><div class="add-story-btn"><i class="fas fa-plus"></i></div><span class="story-name">পোস্ট করুন</span></div>';
+  var byUser={};
+  activeStatuses.forEach(function(s){if(!byUser[s.username])byUser[s.username]=s;});
+  Object.values(byUser).forEach(function(s){
+    var u=allUsers.find(function(x){return x.username===s.username;});
+    var img=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(s.username);
+    var item=document.createElement('div');item.className='story-item';
+    item.onclick=function(){openStoryList(s.username);};
+    item.innerHTML='<div class="story-ring"><img src="'+escAttr(img)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(s.username)+'\';this.onerror=null">'+
+      '<div class="story-type-icon">'+(s.type==='youtube'||s.type==='reel'?'▶':'T')+'</div></div>'+
+      '<span class="story-name">'+esc(s.username)+'</span>';
+    wrap.appendChild(item);
+  });
+}
+
+// ============================================================
+// NEWS FEED — Facebook Style
+// ============================================================
+function buildNewsFeed(){
+  document.getElementById('nf-loading').style.display='flex';
+  gasCall('getActiveStatuses',[],function(statuses){
+    statuses=statuses||[];
+    activeStatuses=statuses;
+    renderStoriesBar();
+    renderNFStoriesStrip();
+    var feed=document.getElementById('nf-feed');
+    feed.innerHTML='';
+    if(!statuses.length){
+      feed.innerHTML='<div class="empty-state"><i class="fas fa-newspaper"></i><p>এখনো কোনো পোস্ট নেই।<br>প্রথম পোস্ট করুন! ✨</p></div>';
+      return;
+    }
+    // Sort: friends-first, then newest
+    var posts=JSON.parse(JSON.stringify(statuses));
+    posts.sort(function(a,b){
+      var af=friendsData.friends&&friendsData.friends.indexOf(a.username)>-1;
+      var bf=friendsData.friends&&friendsData.friends.indexOf(b.username)>-1;
+      if(af&&!bf)return -1;if(!af&&bf)return 1;
+      return new Date(b.timestamp)-new Date(a.timestamp);
+    });
+    posts.forEach(function(p){
+      var card=buildPostCard(p);
+      if(card)feed.appendChild(card);
+    });
+    // Load reactions for all posts
+    var ids=posts.map(function(p){return p.statusId;});
+    gasCall('getStatusReactions',[ids],function(rxData){
+      rxData=rxData||{};
+      posts.forEach(function(p){
+        var myRx=rxData[p.statusId]&&rxData[p.statusId].users?rxData[p.statusId].users[currentUser]:'';
+        if(myRx)postReactions[p.statusId]=myRx;
+        updatePostReactionUI(p.statusId,rxData[p.statusId]||{counts:p.reactionCounts||{},users:{}});
+      });
+    },function(){});
+  },function(){document.getElementById('nf-loading').innerHTML='<i class="fas fa-exclamation-circle"></i><p>ফিড লোড ব্যর্থ</p>';});
+}
+
+function renderNFStoriesStrip(){
+  var wrap=document.getElementById('nf-stories-scroll');
+  wrap.innerHTML='';
+  // Add story card
+  var addCard=document.createElement('div');
+  addCard.className='nf-story-add-card';
+  var meImg=currentUserData?currentUserData.imageUrl||defaultAvatar(currentUser):defaultAvatar(currentUser);
+  addCard.innerHTML='<div class="nf-story-add-wrap" onclick="openPostComposeModal()">'+
+    '<i class="fas fa-plus-circle"></i>'+
+    '<span>পোস্ট<br>করুন</span>'+
+    '</div>';
+  wrap.appendChild(addCard);
+  // Group by user
+  var byUser={};
+  activeStatuses.forEach(function(s){if(!byUser[s.username])byUser[s.username]=s;});
+  Object.values(byUser).forEach(function(s){
+    var u=allUsers.find(function(x){return x.username===s.username;});
+    var img=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(s.username);
+    var bgImg=s.imageUrl||img;
+    var item=document.createElement('div');
+    item.className='nf-story-card';
+    item.style.margin='0 3px';
+    item.onclick=function(){openStoryList(s.username);};
+    item.innerHTML='<div class="nf-story-img-wrap" style="border-color:'+(s.username===currentUser?'var(--accent)':'var(--accent3)')+'">'+
+      '<img src="'+escAttr(bgImg)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(s.username)+'\';this.onerror=null">'+
+      '<div class="nf-story-gradient"></div>'+
+      '<div class="nf-story-avatar-ring"><img src="'+escAttr(img)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(s.username)+'\';this.onerror=null"></div>'+
+      '<div class="nf-story-name">'+esc(s.username)+'</div>'+
+      '</div>';
+    wrap.appendChild(item);
+  });
+}
+
+function buildPostCard(post){
+  var u=allUsers.find(function(x){return x.username===post.username;});
+  var img=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(post.username);
+  var isMine=post.username===currentUser;
+  var isFriend=friendsData.friends&&friendsData.friends.indexOf(post.username)>-1;
+  var rc=post.reactionCounts||{};
+  var totalRx=post.totalReactions||Object.values(rc).reduce(function(a,b){return a+b;},0)||0;
+  var topEmojis=Object.entries(rc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(e){return e[0];});
+  var myRx=postReactions[post.statusId]||'';
+  var commentCount=post.comments||0;
+
+  var card=document.createElement('div');
+  card.className='post-card';
+  card.id='post-card-'+post.statusId;
+
+  // ── Header ──
+  var headerHtml='<div class="post-hdr">'+
+    '<div class="post-hdr-av" onclick="openStoryList(\''+escAttr(post.username)+'\')">'+
+      '<img src="'+escAttr(img)+'" alt="" loading="lazy" onerror="this.src=\''+defaultAvatar(post.username)+'\';this.onerror=null">'+
+      (u&&u.onlineStatus==='Online'?'<div class="ph-online"></div>':'')+
+    '</div>'+
+    '<div class="post-hdr-info">'+
+      '<div class="ph-name" onclick="openStoryList(\''+escAttr(post.username)+'\')">'+esc(post.username)+
+        (isFriend?' <span class="ph-friend-badge">বন্ধু</span>':'')+
+      '</div>'+
+      '<div class="ph-meta">'+
+        '<span>'+esc(getTimeAgo(new Date(post.timestamp)))+'</span>'+
+        '<span class="ph-dot">•</span>'+
+        '<i class="fas fa-'+(post.type==='youtube'||post.type==='reel'?'film':(post.type==='image'?'image':'font'))+'" style="font-size:10px;opacity:.6"></i>'+
+        (post.views?'<span class="ph-dot">•</span><span><i class="fas fa-eye" style="font-size:9px"></i> '+post.views+'</span>':'')+
+      '</div>'+
+    '</div>'+
+    '<div class="post-hdr-opts">'+
+      '<button class="post-opts-btn" onclick="togglePostMenu(\''+escAttr(post.statusId)+'\',event)"><i class="fas fa-ellipsis"></i></button>'+
+      '<div class="post-opts-menu" id="pmenu-'+escAttr(post.statusId)+'">'+
+        (isMine?'<div class="post-opts-item danger" onclick="deletePost(\''+escAttr(post.statusId)+'\')"><i class="fas fa-trash"></i> মুছুন</div>':'<div class="post-opts-item" onclick="openStoryList(\''+escAttr(post.username)+'\')"><i class="fas fa-eye"></i> পুরো পোস্ট দেখুন</div>')+
+        '<div class="post-opts-item" onclick="copyPostLink(\''+escAttr(post.statusId)+'\')"><i class="fas fa-link"></i> লিংক কপি</div>'+
+        '<div class="post-opts-item" onclick="openDM(\''+escAttr(post.username)+'\')"><i class="fas fa-comment"></i> মেসেজ পাঠান</div>'+
+        (!isFriend&&post.username!==currentUser?'<div class="post-opts-item" onclick="sendFriendReq(\''+escAttr(post.username)+'\')"><i class="fas fa-user-plus"></i> বন্ধু যোগ করুন</div>':'')+
+      '</div>'+
+    '</div>'+
+  '</div>';
+
+  // ── Body text ──
+  var bodyHtml='';
+  if(post.content){
+    var isShort=post.content.length<80&&!post.imageUrl&&post.type==='text';
+    bodyHtml='<div class="post-body"><div class="post-text-content'+(isShort?' large':'')+'">'+esc(post.content)+'</div></div>';
+  }
+
+  // ── Media ──
+  var mediaHtml='';
+  if(post.imageUrl&&post.type==='image'){
+    mediaHtml='<div class="post-media-grid grid-1" onclick="openLightbox(\''+escAttr(post.imageUrl)+'\',\''+escAttr(post.content||'')+'\')">'+
+      '<div class="pm-item"><img src="'+escAttr(post.imageUrl)+'" alt="" loading="lazy" onerror="this.src=\'https://picsum.photos/seed/'+escAttr(post.statusId)+'/600/400\';this.onerror=null"></div></div>';
+  } else if((post.type==='youtube'||post.type==='reel')&&post.videoUrl){
+    var ytId=extractYouTubeId(post.videoUrl);
+    if(ytId){
+      mediaHtml='<div class="post-yt-wrap" onclick="openStoryList(\''+escAttr(post.username)+'\')">'+
+        '<img src="https://img.youtube.com/vi/'+ytId+'/mqdefault.jpg" alt="" loading="lazy">'+
+        '<div class="post-yt-play"><i class="fab fa-youtube"></i></div>'+
+        '<div class="post-yt-title"><i class="fab fa-youtube" style="color:var(--red)"></i> YouTube ভিডিও — দেখতে ক্লিক করুন</div>'+
+      '</div>';
+    }
+  }
+
+  // ── Stats bar ──
+  var rxStack=topEmojis.map(function(e,i){return '<div class="rx-ico" style="z-index:'+(10-i)+'">'+e+'</div>';}).join('');
+  var statsHtml='<div class="post-stats-bar">'+
+    '<div class="psb-left">'+
+      (totalRx?'<div class="psb-rx-stack">'+rxStack+'</div><span class="psb-count">'+totalRx+'</span>':'')+
+    '</div>'+
+    '<div class="psb-right">'+
+      (commentCount?'<span onclick="toggleComments(\''+escAttr(post.statusId)+'\')">'+commentCount+' কমেন্ট</span>':'')+
+      (post.views?'<span>'+post.views+' বার দেখা হয়েছে</span>':'')+
+    '</div>'+
+  '</div>';
+
+  // ── Action bar ──
+  var actHtml='<div class="post-actions">'+
+    '<button class="post-act-btn'+(myRx?' liked':'')+'" id="like-btn-'+escAttr(post.statusId)+'" '+
+      'onmouseenter="showRxPopup(\''+escAttr(post.statusId)+'\')" '+
+      'onmouseleave="scheduleHideRxPopup(\''+escAttr(post.statusId)+'\')" '+
+      'onclick="quickLike(\''+escAttr(post.statusId)+'\')">'+
+      '<div class="rx-popup" id="rxp-'+escAttr(post.statusId)+'">'+
+        POST_REACTIONS.map(function(r){
+          return '<span title="'+r.label+'" onclick="reactPost(event,\''+escAttr(post.statusId)+'\',\''+r.emoji+'\')">'+r.emoji+'</span>';
+        }).join('')+
+      '</div>'+
+      (myRx?'<i class="fas fa-heart"></i> <span id="like-lbl-'+escAttr(post.statusId)+'">'+myRx+'</span>':'<i class="far fa-thumbs-up"></i> <span id="like-lbl-'+escAttr(post.statusId)+'">লাইক</span>')+
+    '</button>'+
+    '<button class="post-act-btn" onclick="toggleComments(\''+escAttr(post.statusId)+'\')">'+
+      '<i class="far fa-comment"></i> কমেন্ট'+
+    '</button>'+
+    '<button class="post-act-btn" onclick="sharePost(\''+escAttr(post.statusId)+'\')">'+
+      '<i class="fas fa-share"></i> শেয়ার'+
+    '</button>'+
+  '</div>';
+
+  // ── Comments section ──
+  var meImg=currentUserData?currentUserData.imageUrl||defaultAvatar(currentUser):defaultAvatar(currentUser);
+  var commentsHtml='<div class="post-comments" id="comments-'+escAttr(post.statusId)+'">'+
+    '<div class="pc-list" id="pc-list-'+escAttr(post.statusId)+'"></div>'+
+    '<div class="pc-emoji-strip" id="pc-emoji-'+escAttr(post.statusId)+'">'+
+      ['😊','❤️','😂','🔥','👍','🙏','😍','🎉'].map(function(e){
+        return '<button class="pce-btn" onclick="insertPcEmoji(\''+escAttr(post.statusId)+'\',\''+e+'\')">'+e+'</button>';
+      }).join('')+
+    '</div>'+
+    '<div class="pc-input-row">'+
+      '<img src="'+escAttr(meImg)+'" alt="" loading="lazy">'+
+      '<div class="pc-input-wrap">'+
+        '<button class="pc-emoji-btn" onclick="togglePcEmoji(\''+escAttr(post.statusId)+'\')"><i class="fas fa-face-smile"></i></button>'+
+        '<input id="pc-inp-'+escAttr(post.statusId)+'" placeholder="কমেন্ট লিখুন..." '+
+          'onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();submitComment(\''+escAttr(post.statusId)+'\');}">'+
+        '<button class="pc-send" onclick="submitComment(\''+escAttr(post.statusId)+'\')"><i class="fas fa-paper-plane"></i></button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+
+  card.innerHTML=headerHtml+bodyHtml+mediaHtml+statsHtml+actHtml+commentsHtml;
+  return card;
+}
+
+// Post options menu
+function togglePostMenu(postId,e){
+  e.stopPropagation();
+  var menu=document.getElementById('pmenu-'+postId);
+  if(!menu)return;
+  var isOpen=menu.classList.contains('open');
+  document.querySelectorAll('.post-opts-menu.open').forEach(function(m){m.classList.remove('open');});
+  if(!isOpen)menu.classList.add('open');
+}
+document.addEventListener('click',function(){
+  document.querySelectorAll('.post-opts-menu.open').forEach(function(m){m.classList.remove('open');});
+});
+
+// Reactions
+var rxTimers={};
+function showRxPopup(postId){
+  clearTimeout(rxTimers[postId+'_hide']);
+  var popup=document.getElementById('rxp-'+postId);
+  if(popup)popup.classList.add('show');
+}
+function scheduleHideRxPopup(postId){
+  rxTimers[postId+'_hide']=setTimeout(function(){
+    var popup=document.getElementById('rxp-'+postId);
+    if(popup)popup.classList.remove('show');
+  },400);
+}
+function quickLike(postId){
+  // Toggle like or pick default 👍
+  var cur=postReactions[postId];
+  if(cur){reactPost(null,postId,cur);}// remove
+  else{reactPost(null,postId,'👍');}
+}
+function reactPost(e,postId,emoji){
+  if(e){e.stopPropagation();}
+  var popup=document.getElementById('rxp-'+postId);
+  if(popup)popup.classList.remove('show');
+  var cur=postReactions[postId];
+  if(cur===emoji){
+    // Remove reaction
+    postReactions[postId]='';
+    gasCall('addStatusReaction',[postId,currentUser,emoji],function(){},function(){});
+  } else {
+    postReactions[postId]=emoji;
+    gasCall('addStatusReaction',[postId,currentUser,emoji],function(){},function(){});
+  }
+  // Update UI immediately
+  var btn=document.getElementById('like-btn-'+postId);
+  var lbl=document.getElementById('like-lbl-'+postId);
+  var newRx=postReactions[postId];
+  if(btn){btn.classList.toggle('liked',!!newRx);}
+  if(lbl){
+    if(newRx){
+      var rx=POST_REACTIONS.find(function(r){return r.emoji===newRx;});
+      lbl.textContent=newRx+' '+(rx?rx.label:'লাইক');
+      var ico=btn?btn.querySelector('i'):null;
+      if(ico){ico.className='fas fa-heart';}
+    } else {
+      lbl.textContent='লাইক';
+      var ico=btn?btn.querySelector('i'):null;
+      if(ico){ico.className='far fa-thumbs-up';}
+    }
+  }
+}
+function updatePostReactionUI(postId,rxData){
+  var myRx=rxData.users&&rxData.users[currentUser]?rxData.users[currentUser]:'';
+  postReactions[postId]=myRx;
+  var btn=document.getElementById('like-btn-'+postId);
+  var lbl=document.getElementById('like-lbl-'+postId);
+  if(!btn)return;
+  btn.classList.toggle('liked',!!myRx);
+  if(lbl){
+    if(myRx){
+      var ico=btn.querySelector('i');if(ico)ico.className='fas fa-heart';
+      var rxObj=POST_REACTIONS.find(function(r){return r.emoji===myRx;});
+      lbl.textContent=myRx+' '+(rxObj?rxObj.label:'লাইক');
+    }
+  }
+}
+
+// Comments
+function toggleComments(postId){
+  var section=document.getElementById('comments-'+postId);
+  if(!section)return;
+  var isOpen=section.classList.contains('open');
+  section.classList.toggle('open',!isOpen);
+  if(!isOpen){
+    loadComments(postId);
+    setTimeout(function(){var inp=document.getElementById('pc-inp-'+postId);if(inp)inp.focus();},100);
+  }
+}
+function loadComments(postId){
+  gasCall('getStatusComments',[postId],function(comments){
+    comments=comments||[];
+    var el=document.getElementById('pc-list-'+postId);
+    if(!el)return;
+    el.innerHTML='';
+    if(!comments.length){el.innerHTML='<div style="padding:8px 14px;font-size:12px;color:var(--text3)">প্রথম কমেন্ট করুন 💬</div>';return;}
+    var show=comments.slice(0,50);
+    // "View more" if too many
+    if(comments.length>3){
+      var btn=document.createElement('button');btn.className='pc-view-more';
+      btn.textContent='সব '+comments.length+'টি কমেন্ট দেখুন';
+      btn.onclick=function(){btn.style.display='none';renderCommentsList(el,comments);};
+      el.appendChild(btn);
+      renderCommentsList(el,comments.slice(-2));
+    } else {
+      renderCommentsList(el,show);
+    }
+  },function(){});
+}
+function renderCommentsList(el,comments){
+  comments.forEach(function(c){
+    var cu=allUsers.find(function(x){return x.username===c.username;});
+    var ci=document.createElement('div');ci.className='pc-item';
+    var cImg=(cu&&cu.imageUrl)?cu.imageUrl:defaultAvatar(c.username);
+    var isMe=c.username===currentUser;
+    ci.innerHTML='<img src="'+escAttr(cImg)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(c.username)+'\';this.onerror=null">'+
+      '<div>'+
+        '<div class="pc-bubble">'+
+          '<div class="pc-name">'+esc(c.username)+'</div>'+
+          '<div class="pc-text">'+esc(c.comment)+'</div>'+
+          '<div class="pc-actions">'+
+            '<button class="pc-action-btn" onclick="likeComment(this)">👍 লাইক</button>'+
+            '<button class="pc-action-btn" onclick="replyToComment(\''+escAttr(c.commentId)+'\',\''+escAttr(c.username)+'\',\''+escAttr(c.comment.substring(0,30))+'\',\''+escAttr(c.statusId)+'\')">↩ রিপ্লাই</button>'+
+            (isMe?'<button class="pc-action-btn" style="color:var(--red)" onclick="deleteComment(\''+escAttr(c.commentId)+'\',\''+escAttr(c.statusId)+'\')">✕</button>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="pc-time">'+esc(getTimeAgo(new Date(c.timestamp)))+'</div>'+
+      '</div>';
+    el.appendChild(ci);
+  });
+}
+function submitComment(postId){
+  var inp=document.getElementById('pc-inp-'+postId);
+  if(!inp)return;
+  var text=(inp.value||'').trim();
+  if(!text)return;
+  inp.value='';hidePcEmoji(postId);
+  gasCall('addStatusComment',[postId,currentUser,text],function(r){
+    if(r&&r.success){loadComments(postId);toast('success','','কমেন্ট পোস্ট হয়েছে 💬');}
+  },function(){});
+}
+function deleteComment(commentId,statusId){
+  gasCall('deleteStatusComment',[commentId,currentUser],function(r){
+    if(r&&r.success){loadComments(statusId);}
+  },function(){});
+}
+function likeComment(btn){btn.classList.toggle('liked');btn.textContent=btn.classList.contains('liked')?'❤️ পছন্দ':'👍 লাইক';}
+function replyToComment(commentId,username,text,statusId){
+  var inp=document.getElementById('pc-inp-'+statusId);
+  if(!inp)return;
+  inp.value='@'+username+' ';
+  inp.focus();
+}
+
+// Emoji for comments
+function togglePcEmoji(postId){
+  var strip=document.getElementById('pc-emoji-'+postId);
+  if(strip)strip.classList.toggle('show');
+}
+function hidePcEmoji(postId){
+  var strip=document.getElementById('pc-emoji-'+postId);
+  if(strip)strip.classList.remove('show');
+}
+function insertPcEmoji(postId,emoji){
+  var inp=document.getElementById('pc-inp-'+postId);
+  if(!inp)return;
+  inp.value=inp.value+emoji;
+  inp.focus();
+}
+
+function deletePost(postId){
+  Swal.fire({title:'পোস্ট মুছবেন?',icon:'warning',showCancelButton:true,confirmButtonText:'মুছুন',cancelButtonText:'বাতিল',background:'var(--bg2)',color:'var(--text)',confirmButtonColor:'var(--red)'})
+  .then(function(r){if(r.isConfirmed){gasCall('deleteStatus',[postId,currentUser],function(){toast('info','মুছে গেছে','');buildNewsFeed();},function(){});}});
+}
+function copyPostLink(postId){
+  var url=window.location.href.split('#')[0]+'#post-'+postId;
+  if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast('info','লিংক কপি','পোস্টের লিংক কপি হয়েছে!');});
+}
+function sharePost(postId){toast('info','শেয়ার','শেয়ার ফিচার শীঘ্রই আসছে 🔗');}
+function sendFriendReq(username){gasCall('sendFriendRequest',[currentUser,username],function(r){toast(r&&r.success?'success':'info','',r?r.message:'');},function(){});}
+
+// ── POST COMPOSE MODAL ──
+var cmComposeMode='text';
+function openPostComposeModal(mode){
+  cmComposeMode=mode||'text';cmImgData=null;cmYTAreaVisible=false;
+  var cm=document.getElementById('cm-avatar');
+  if(cm){cm.src=currentUserData?currentUserData.imageUrl||defaultAvatar(currentUser):defaultAvatar(currentUser);cm.onerror=function(){this.src=defaultAvatar(currentUser);this.onerror=null;};}
+  var nm=document.getElementById('cm-name');if(nm)nm.textContent=currentUserData?currentUserData.username:currentUser;
+  document.getElementById('cm-text').value='';
+  document.getElementById('cm-img-preview-wrap').style.display='none';
+  document.getElementById('cm-yt-preview').style.display='none';
+  document.getElementById('cm-yt-preview').innerHTML='';
+  document.getElementById('cm-url-area').style.display='none';
+  document.getElementById('cm-url').value='';
+  document.getElementById('cm-yt-btn').classList.remove('active');
+  if(mode==='image'){document.getElementById('cm-img-input').click();}
+  else if(mode==='youtube'){toggleCmYTArea();}
+  show('post-compose-modal');
+  setTimeout(function(){document.getElementById('cm-text').focus();},200);
+}
+function handleCmImg(input){
+  if(!input.files[0])return;
+  var file=input.files[0];
+  if(file.size>4*1024*1024){toast('error','ফাইল বড়','৪ MB-এর কম ছবি দিন');return;}
+  readFile(file,function(dataUrl){
+    cmImgData=dataUrl;
+    document.getElementById('cm-img-preview').src=dataUrl;
+    document.getElementById('cm-img-preview-wrap').style.display='block';
+  });
+  input.value='';
+}
+function removeCmImg(){cmImgData=null;document.getElementById('cm-img-preview-wrap').style.display='none';}
+function toggleCmYTArea(){
+  cmYTAreaVisible=!cmYTAreaVisible;
+  document.getElementById('cm-url-area').style.display=cmYTAreaVisible?'block':'none';
+  document.getElementById('cm-yt-btn').classList.toggle('active',cmYTAreaVisible);
+  if(cmYTAreaVisible)setTimeout(function(){document.getElementById('cm-url').focus();},100);
+}
+function previewCmYT(url){
+  var ytId=extractYouTubeId(url);var prev=document.getElementById('cm-yt-preview');
+  if(ytId){prev.style.display='block';prev.innerHTML='<img src="https://img.youtube.com/vi/'+ytId+'/mqdefault.jpg" style="width:100%;display:block;max-height:160px;object-fit:cover">';}
+  else{prev.style.display='none';prev.innerHTML='';}
+}
+function insertCmEmoji(){
+  var ta=document.getElementById('cm-text');
+  var emojis=['😊','❤️','🔥','😂','👍','🎉','✨','🙏','💯','😍','🥳','💪'];
+  var picker=document.createElement('div');
+  picker.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px;z-index:600;display:flex;flex-wrap:wrap;gap:6px;max-width:240px;box-shadow:var(--shadow)';
+  emojis.forEach(function(e){var btn=document.createElement('span');btn.textContent=e;btn.style.cssText='font-size:24px;cursor:pointer;transition:.1s;line-height:1';btn.onclick=function(){ta.value+=e;ta.focus();document.body.removeChild(picker);};btn.onmouseover=function(){this.style.transform='scale(1.4)';};btn.onmouseout=function(){this.style.transform='scale(1)';};picker.appendChild(btn);});
+  var close=document.createElement('div');close.textContent='✕';close.style.cssText='width:100%;text-align:right;cursor:pointer;color:var(--text3);font-size:12px';close.onclick=function(){document.body.removeChild(picker);};picker.appendChild(close);
+  document.body.appendChild(picker);
+}
+function submitCompose(){
+  var text=(document.getElementById('cm-text').value||'').trim();
+  var url=v('cm-url');
+  var ytId=url?extractYouTubeId(url):null;
+  if(!text&&!cmImgData&&!ytId){toast('error','ত্রুটি','কিছু একটা লিখুন বা মিডিয়া যোগ করুন');return;}
+  var type='text',videoUrl='',imgUrl='';
+  if(ytId){type='youtube';videoUrl=url;}
+  else if(cmImgData){type='image';imgUrl=cmImgData;}
+  gasCall('postStatus',[currentUser,type,text,videoUrl,imgUrl],function(r){
+    if(r&&r.success){toast('success','সফল','পোস্ট হয়েছে! 🎉');closeModal('post-compose-modal');loadStatuses();buildNewsFeed();}
+    else toast('error','ত্রুটি',r?r.message:'');
+  },function(){toast('error','সার্ভার ত্রুটি','');});
+}
+
+function showNewsFeed(){
+  show('news-feed-screen');
+  hide('chat-panel');
+  setActiveBottomNav('bn-home');
+}
+function goBackToFeed(){showNewsFeed();}
+
+// ── CHATTING ──
+function openDM(username){
+  connectedUser=username;connectedGroup='';chatType='dm';
+  pinnedMsg=null;renderPinnedBar();
+  hide('news-feed-screen');
+  var cp=document.getElementById('chat-panel');cp.classList.remove('hidden');cp.style.display='flex';
+  var u=allUsers.find(function(x){return x.username===username;});
+  var av=document.getElementById('chat-header-avatar');
+  av.src=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(username);av.onerror=function(){this.src=defaultAvatar(username);this.onerror=null;};
+  document.getElementById('chat-header-name').textContent=username;
+  document.getElementById('chat-header-name').style.cssText='font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+  document.getElementById('chat-header-sub').textContent=u?(u.shortStatus||(u.onlineStatus==='Online'?'🟢 অনলাইন':'⚫ অফলাইন')):'';
+  document.getElementById('chat-header-sub').style.cssText='font-size:11px;color:var(--text2)';
+  document.getElementById('btn-add-friend').style.display='flex';
+  document.getElementById('msg-input').disabled=false;
+  document.getElementById('send-btn').disabled=false;
+  removeAttachment();cancelEdit();cancelReply();hideMsgSearch();
+  renderContacts();loadDMMessages();closeSidebar();
+  document.getElementById('msg-input').focus();
+  setActiveBottomNav('bn-chat');
+}
+function loadDMMessages(){
+  if(!connectedUser)return;
+  gasCall('getMessages',[currentUser,connectedUser],function(msgs){
+    msgs=msgs||[];
+    var msgIds=msgs.map(function(m){return m.msgId;}).filter(Boolean);
+    gasCall('getReactions',[msgIds],function(reactions){renderMessages(msgs,reactions||{});},function(){renderMessages(msgs,{});});
+    gasCall('markMessagesAsRead',[connectedUser,currentUser],function(){},function(){});
+    gasCall('getUnreadCountForUser',[currentUser],function(c){unreadCounts=c||{};renderContacts();},function(){});
+  },function(){});
+}
+function renderMessages(msgs,reactions){
+  var area=document.getElementById('messages-area');
+  var atBottom=area.scrollHeight-area.clientHeight-area.scrollTop<120;
+  area.innerHTML='';
+  if(!msgs.length){area.innerHTML='<div class="empty-state"><i class="fas fa-comment-dots"></i><p>কোনো মেসেজ নেই।<br>প্রথম মেসেজ পাঠান! 👋</p></div>';return;}
+  var lastDate='';
+  msgs.forEach(function(m){
+    var d=new Date(m.timestamp||Date.now());
+    var ds=d.toLocaleDateString('bn-BD',{day:'numeric',month:'long',year:'numeric'});
+    if(ds!==lastDate){lastDate=ds;var sep=document.createElement('div');sep.className='date-sep';sep.innerHTML='<span>'+esc(ds)+'</span>';area.appendChild(sep);}
+    var sent=m.sender===currentUser;
+    var msg=m.message||'';var ts=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    var status=m.status||'';var msgId=m.msgId||('r'+Math.random().toString(36).slice(2));
+    var replyTxt=m.replyTo||'';var fileData=m.fileData||'';var fileName=m.fileName||'';
+    var tick='';
+    if(sent){if(status==='Read')tick='<i class="fas fa-check-double tick-read" style="font-size:10px"></i>';else if(status==='Delivered')tick='<i class="fas fa-check-double tick-sent" style="font-size:10px"></i>';else tick='<i class="fas fa-check tick-sent" style="font-size:10px"></i>';}
+    var rMap=(reactions&&msgId)?(reactions[msgId]||{}):{};
+    var rxHtml=Object.entries(rMap).map(function(e){return '<span class="reaction-chip">'+e[0]+' '+e[1]+'</span>';}).join('');
+    var sU=allUsers.find(function(u){return u.username===m.sender;});
+    var fileHtml='';
+    if(fileData&&fileData.length>10){var isImg=/^data:image\//i.test(fileData);if(isImg){fileHtml='<img class="msg-image" src="'+escAttr(fileData)+'" alt="'+(fileName?esc(fileName):'ছবি')+'" loading="lazy">';}else{var ext=(fileName||'').split('.').pop().toLowerCase();var icon=ext==='pdf'?'fa-file-pdf':(ext==='doc'||ext==='docx')?'fa-file-word':'fa-file';fileHtml='<div style="margin-bottom:3px"><i class="fas '+icon+'" style="font-size:16px;color:var(--accent2)"></i> <span style="font-size:12px;font-weight:600">'+esc(fileName||'ফাইল')+'</span></div>';}}
+    var bId='b-'+msgId;
+    var wrap=document.createElement('div');wrap.className='msg-wrapper '+(sent?'sent':'received');wrap.setAttribute('data-msgid',msgId);
+    if(!sent&&sU){var av=document.createElement('img');av.className='msg-avatar';av.src=sU.imageUrl||defaultAvatar(sU.username);av.loading='lazy';av.onerror=function(){this.src=defaultAvatar(sU.username);this.onerror=null;};wrap.appendChild(av);}
+    var col=document.createElement('div');col.style.cssText='display:flex;flex-direction:column;align-items:'+(sent?'flex-end':'flex-start');
+    var safeMsg=esc(msg).substring(0,80).replace(/'/g,'&#39;');var safeMsgId=escAttr(msgId);var sentStr=sent?'true':'false';
+    col.innerHTML=
+      '<div class="msg-bubble" id="'+esc(bId)+'" ondblclick="showReactionPicker(\''+esc(bId)+'\')" oncontextmenu="showMsgCtx(event,\''+safeMsgId+'\','+sentStr+',\''+safeMsg+'\');return false">'+
+        (replyTxt?'<div class="msg-reply-preview"><i class="fas fa-reply" style="font-size:9px"></i> '+esc(replyTxt)+'</div>':'')+
+        (fileHtml?fileHtml:'')+
+        (msg?'<span>'+esc(msg)+'</span>':'')+
+        '<div class="msg-meta"><span>'+ts+'</span>'+tick+'</div>'+
+        '<div class="reaction-picker" id="rp-'+esc(bId)+'">'+
+          ['❤️','😂','👍','😮','😢','🔥','🎉','👏'].map(function(e){return '<span onclick="doReact(\''+safeMsgId+'\',\''+e+'\');hideAllPickers()">'+e+'</span>';}).join('')+
+        '</div>'+
+      '</div>'+
+      (rxHtml?'<div class="reactions-row">'+rxHtml+'</div>':'');
+    wrap.appendChild(col);area.appendChild(wrap);
+    if(fileData&&/^data:image\//i.test(fileData)){var imgEl=col.querySelector('.msg-image');if(imgEl){(function(src){imgEl.onclick=function(e){e.stopPropagation();openLightbox(src,'');};})(fileData);}}
+  });
+  if(atBottom||msgs.length<=3)area.scrollTop=area.scrollHeight;
+}
+
+function showMsgCtx(e,msgId,isSent,msgText){
+  e.preventDefault();hideAllPickers();
+  var menu=document.getElementById('msg-ctx-menu');menu.classList.remove('hidden');
+  var items=[];var safeId=msgId.replace(/'/g,'\\\'');var safeTxt=(msgText||'').replace(/'/g,'\\\'').replace(/\\/g,'\\\\');
+  items.push({icon:'fa-reply',label:'রিপ্লাই',action:"replyMsg('"+safeId+"','"+safeTxt+"')"});
+  items.push({icon:'fa-thumbtack',label:'পিন করুন',action:"pinMessage('"+safeId+"','"+safeTxt+"')"});
+  items.push({icon:'fa-copy',label:'কপি করুন',action:"copyMsg('"+safeTxt+"')"});
+  if(isSent){items.push({icon:'fa-pencil',label:'এডিট',action:"startEdit('"+safeId+"','"+safeTxt+"')"});items.push({icon:'fa-trash',label:'ডিলিট',cls:'danger',action:"deleteMsg('"+safeId+"')"});}
+  menu.innerHTML=items.map(function(it){return '<div class="msg-ctx-item'+(it.cls?' '+it.cls:'')+'" onclick="'+it.action+';closeMsgCtx()"><i class="fas '+it.icon+'"></i>'+it.label+'</div>';}).join('');
+  var x=Math.min(e.clientX,window.innerWidth-165);var y=Math.min(e.clientY,window.innerHeight-items.length*40-10);
+  menu.style.left=x+'px';menu.style.top=y+'px';
+}
+function closeMsgCtx(){document.getElementById('msg-ctx-menu').classList.add('hidden');}
+document.addEventListener('click',function(e){if(!e.target.closest('#msg-ctx-menu'))closeMsgCtx();});
+function copyMsg(text){if(navigator.clipboard)navigator.clipboard.writeText(text).then(function(){toast('info','কপি','মেসেজ কপি হয়েছে');});}
+function deleteMsg(msgId){
+  Swal.fire({title:'মেসেজ ডিলিট?',icon:'warning',showCancelButton:true,confirmButtonText:'ডিলিট',cancelButtonText:'বাতিল',background:'var(--bg2)',color:'var(--text)',confirmButtonColor:'var(--red)'})
+  .then(function(r){if(r.isConfirmed){gasCall('deleteMessage',[msgId,currentUser],function(res){if(res&&res.success){playSound('delete');loadDMMessages();}},function(){});}});
+}
+function startEdit(msgId,text){editingMsgId=msgId;document.getElementById('msg-input').value=text;document.getElementById('ep-text').textContent='এডিট: "'+text.substring(0,50)+'"';document.getElementById('edit-preview-bar').style.display='flex';document.getElementById('msg-input').focus();}
+function cancelEdit(){editingMsgId=null;document.getElementById('edit-preview-bar').style.display='none';document.getElementById('msg-input').value='';}
+function pinMessage(msgId,text){pinnedMsg={msgId:msgId,text:text};renderPinnedBar();toast('info','পিন','মেসেজ পিন করা হয়েছে 📌');}
+function unpinMessage(){pinnedMsg=null;renderPinnedBar();}
+function renderPinnedBar(){var bar=document.getElementById('pinned-msg-bar');if(pinnedMsg){bar.style.display='flex';document.getElementById('pinned-msg-text').textContent=pinnedMsg.text.substring(0,60)+(pinnedMsg.text.length>60?'...':'');}else bar.style.display='none';}
+function toggleMsgSearch(){var bar=document.getElementById('msg-search-bar');if(bar.style.display==='flex')hideMsgSearch();else{bar.style.display='flex';document.getElementById('msg-search-input').focus();}}
+function hideMsgSearch(){document.getElementById('msg-search-bar').style.display='none';document.getElementById('msg-search-input').value='';document.getElementById('msg-search-count').textContent='';}
+function searchMessages(){var q=v('msg-search-input').toLowerCase();if(!q){document.getElementById('msg-search-count').textContent='';return;}var area=document.getElementById('messages-area');var bubbles=area.querySelectorAll('.msg-bubble span:not([class])');var count=0;bubbles.forEach(function(el){var txt=el.textContent;var idx=txt.toLowerCase().indexOf(q);if(idx>=0){count++;el.innerHTML=esc(txt.substring(0,idx))+'<span class="msg-highlight">'+esc(txt.substring(idx,idx+q.length))+'</span>'+esc(txt.substring(idx+q.length));}});document.getElementById('msg-search-count').textContent=count?count+' পাওয়া গেছে':'কিছু নেই';}
+function openLightbox(src,cap){var lb=document.getElementById('img-lightbox');document.getElementById('img-lightbox-src').src=src;document.getElementById('img-lightbox-cap').textContent=cap||'';lb.style.display='flex';}
+var MAX_FILE=1.5*1024*1024;
+function handleFileAttach(input){
+  var file=input.files[0];if(!file){removeAttachment();return;}
+  if(file.size>MAX_FILE){toast('error','ফাইল বড়','১.৫ MB-এর কম হতে হবে');input.value='';return;}
+  readFile(file,function(dataUrl){
+    attachedFile={dataUrl:dataUrl,fileName:file.name,mimeType:file.type,sizeKB:(file.size/1024).toFixed(1)};
+    var bar=document.getElementById('attach-preview-bar');var tw=document.getElementById('ap-thumb-wrap');
+    if(/^image\//i.test(file.type)){tw.innerHTML='<img class="ap-thumb" src="'+escAttr(dataUrl)+'" alt="">';}
+    else{var ext=file.name.split('.').pop().toLowerCase();var ico=ext==='pdf'?'📄':ext==='doc'||ext==='docx'?'📝':'📎';tw.innerHTML='<div class="ap-thumb-file">'+ico+'</div>';}
+    document.getElementById('ap-name').textContent=file.name;
+    document.getElementById('ap-size').textContent=attachedFile.sizeKB+' KB';
+    bar.style.display='flex';
+    document.getElementById('attach-label').classList.add('has-file');
+  });
+  input.value='';
+}
+function removeAttachment(){attachedFile=null;document.getElementById('attach-preview-bar').style.display='none';document.getElementById('attach-label').classList.remove('has-file');document.getElementById('ap-thumb-wrap').innerHTML='';}
+function updateCharCount(){var inp=document.getElementById('msg-input'),cc=document.getElementById('char-count'),len=inp.value.length;if(len>700){cc.style.display='block';cc.textContent=len+'/1000';cc.className=len>900?'over':'warn';}else cc.style.display='none';}
+function handleMsgKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function sendMsg(){
+  var inp=document.getElementById('msg-input');var msg=inp.value.trim();
+  if(!msg&&!attachedFile)return;
+  if(msg.length>1000)return toast('error','ত্রুটি','১০০০ অক্ষরের বেশি না');
+  if(editingMsgId){if(!msg)return;var eid=editingMsgId;gasCall('editMessage',[eid,currentUser,msg],function(r){if(r&&r.success){cancelEdit();playSound('send');loadDMMessages();}},function(){});return;}
+  var ts=new Date().toISOString();var rt=replyTo?replyTo.text:'';var fd=attachedFile?attachedFile.dataUrl:'';var fn=attachedFile?attachedFile.fileName:'';
+  inp.value='';updateCharCount();cancelReply();removeAttachment();playSound('send');
+  if(chatType==='dm'){gasCall('sendMessage',[currentUser,connectedUser,msg,ts,rt,fd,fn],function(r){if(r&&!r.success)toast('error','ত্রুটি',r.message||'');loadDMMessages();},function(){toast('error','ত্রুটি','মেসেজ পাঠানো যায়নি');});}
+  else if(chatType==='group'){gasCall('sendGroupMessage',[connectedGroup,currentUser,msg,ts],function(){loadGroupMessages();},function(){});}
+}
+function replyMsg(msgId,text){replyTo={msgId:msgId,text:text};document.getElementById('rp-text').textContent=text.substring(0,70)+(text.length>70?'...':'');document.getElementById('reply-preview-bar').style.display='flex';document.getElementById('msg-input').focus();}
+function cancelReply(){replyTo=null;document.getElementById('reply-preview-bar').style.display='none';}
+function showReactionPicker(bId){hideAllPickers();var rp=document.getElementById('rp-'+bId);if(rp)rp.style.display='flex';setTimeout(hideAllPickers,5000);}
+function hideAllPickers(){document.querySelectorAll('.reaction-picker').forEach(function(p){p.style.display='none';});}
+function doReact(msgId,emoji){if(!msgId)return;gasCall('addReaction',[msgId,currentUser,emoji],function(){loadDMMessages();},function(){});}
+
+// GROUPS
+function loadMyGroups(){gasCall('getUserGroups',[currentUser],function(g){myGroups=g||[];renderGroupsList();},function(){myGroups=[];renderGroupsList();});}
+function renderGroupsList(){
+  var el=document.getElementById('groups-list');
+  if(!myGroups.length){el.innerHTML='<div class="empty-state"><i class="fas fa-users"></i><p>কোনো গ্রুপ নেই।</p></div>';return;}
+  el.innerHTML='';
+  myGroups.forEach(function(g){
+    var div=document.createElement('div');div.className='group-item'+(connectedGroup===g.groupId&&chatType==='group'?' active':'');
+    div.onclick=function(){openGroupChat(g);};
+    div.innerHTML='<div class="group-avatar">'+esc(g.name.substring(0,2).toUpperCase())+'</div>'+
+      '<div class="group-info"><h6>'+esc(g.name)+'</h6><p>'+esc(g.description||'গ্রুপ চ্যাট')+'</p></div>';
+    el.appendChild(div);
+  });
+}
+function openGroupChat(g){
+  connectedGroup=g.groupId;connectedUser='';chatType='group';pinnedMsg=null;renderPinnedBar();
+  hide('news-feed-screen');
+  var cp=document.getElementById('chat-panel');cp.classList.remove('hidden');cp.style.display='flex';
+  document.getElementById('chat-header-avatar').src=defaultAvatar(g.name);
+  document.getElementById('chat-header-name').textContent=g.name;
+  document.getElementById('chat-header-name').style.cssText='font-size:14px;font-weight:700';
+  document.getElementById('chat-header-sub').textContent=g.description||'গ্রুপ চ্যাট';
+  document.getElementById('chat-header-sub').style.cssText='font-size:11px;color:var(--text2)';
+  document.getElementById('btn-add-friend').style.display='none';
+  removeAttachment();cancelEdit();cancelReply();hideMsgSearch();
+  renderGroupsList();loadGroupMessages();closeSidebar();
+  document.getElementById('msg-input').focus();
+}
+function loadGroupMessages(){
+  if(!connectedGroup)return;
+  gasCall('getGroupMessages',[connectedGroup],function(msgs){
+    var area=document.getElementById('messages-area');msgs=msgs||[];
+    if(!msgs.length){area.innerHTML='<div class="empty-state"><i class="fas fa-comments"></i><p>কোনো মেসেজ নেই।</p></div>';return;}
+    area.innerHTML='';
+    msgs.forEach(function(m){
+      var sent=m.sender===currentUser;var d=new Date(m.timestamp);var ts=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      var wrap=document.createElement('div');wrap.className='msg-wrapper '+(sent?'sent':'received');
+      var sU=allUsers.find(function(u){return u.username===m.sender;});
+      if(!sent&&sU){var av=document.createElement('img');av.className='msg-avatar';av.src=sU.imageUrl||defaultAvatar(sU.username);av.loading='lazy';av.onerror=function(){this.src=defaultAvatar(sU.username);this.onerror=null;};wrap.appendChild(av);}
+      var col=document.createElement('div');col.style.cssText='display:flex;flex-direction:column;align-items:'+(sent?'flex-end':'flex-start');
+      col.innerHTML=(!sent?'<div style="font-size:10px;color:var(--accent2);margin-bottom:2px;font-weight:700">'+esc(m.sender)+'</div>':'')+
+        '<div class="msg-bubble">'+esc(m.message)+'<div class="msg-meta"><span>'+ts+'</span></div></div>';
+      wrap.appendChild(col);area.appendChild(wrap);
+    });
+    area.scrollTop=area.scrollHeight;
+  },function(){});
+}
+function openCreateGroupModal(){
+  var el=document.getElementById('cg-members-list');el.innerHTML='';selectedGroupMembers=[];
+  document.getElementById('cg-name').value='';document.getElementById('cg-desc').value='';
+  allUsers.filter(function(u){return u.username!==currentUser;}).forEach(function(u){
+    var row=document.createElement('label');row.style.cssText='display:flex;align-items:center;gap:7px;padding:7px;border-radius:7px;cursor:pointer;transition:.13s';
+    row.onmouseover=function(){this.style.background='var(--bg3)';};row.onmouseout=function(){this.style.background='';};
+    row.innerHTML='<input type="checkbox" value="'+esc(u.username)+'" onchange="toggleGroupMember(this)" style="width:15px;height:15px;accent-color:var(--accent)">'+
+      '<img src="'+escAttr(u.imageUrl||defaultAvatar(u.username))+'" loading="lazy" onerror="this.src=\''+defaultAvatar(u.username)+'\';this.onerror=null" style="width:28px;height:28px;border-radius:50%;object-fit:cover">'+
+      '<span style="font-size:12px;font-weight:500">'+esc(u.username)+'</span>';
+    el.appendChild(row);
+  });
+  show('create-group-modal');
+}
+function toggleGroupMember(cb){if(cb.checked)selectedGroupMembers.push(cb.value);else selectedGroupMembers=selectedGroupMembers.filter(function(x){return x!==cb.value;});}
+function createGroup(){
+  var name=v('cg-name'),desc=v('cg-desc');if(!name)return toast('error','ত্রুটি','গ্রুপের নাম দিন');
+  gasCall('createGroup',[currentUser,name,desc],function(r){
+    if(r&&r.success){selectedGroupMembers.forEach(function(m){gasCall('addGroupMember',[r.groupId,m,currentUser],function(){},function(){});});toast('success','সফল','"'+name+'" তৈরি হয়েছে 🎉');closeModal('create-group-modal');loadMyGroups();}
+    else toast('error','ত্রুটি',r?(r.message||''):'');
+  },function(){});
+}
+
+// FRIENDS
+function loadFriends(){gasCall('getFriendsData',[currentUser],function(fd){friendsData=fd||{friends:[],pending:[],requests:[]};renderFriendsPanel();updateFriendBadge();},function(){renderFriendsPanel();});}
+function updateFriendBadge(){
+  var req=(friendsData.requests&&friendsData.requests.length)||0;
+  var btn=document.getElementById('nf-friend-btn');
+  if(btn){var badge=btn.querySelector('.nbadge');if(!badge){badge=document.createElement('span');badge.className='nbadge';btn.appendChild(badge);}if(req>0){badge.textContent=req;badge.classList.remove('hidden');}else badge.classList.add('hidden');}
+}
+function renderFriendsPanel(){
+  var el=document.getElementById('friends-content');el.innerHTML='';
+  if(friendsData.requests&&friendsData.requests.length){
+    el.innerHTML+='<div class="friends-section-title"><i class="fas fa-bell" style="color:var(--yellow)"></i> বন্ধু অনুরোধ ('+friendsData.requests.length+')</div>';
+    friendsData.requests.forEach(function(r){
+      var u=allUsers.find(function(x){return x.username===r.from;});
+      el.innerHTML+='<div class="friend-item"><img src="'+(u?escAttr(u.imageUrl):defaultAvatar(r.from))+'" onerror="this.src=\''+defaultAvatar(r.from)+'\';this.onerror=null" loading="lazy"><span class="fi-name">'+esc(r.from)+'</span>'+
+        '<div class="fi-actions"><button class="fi-btn btn-green" onclick="respondFriend(\''+esc(r.id)+'\',\'Accepted\')"><i class="fas fa-check"></i></button>'+
+        '<button class="fi-btn btn-danger" onclick="respondFriend(\''+esc(r.id)+'\',\'Rejected\')"><i class="fas fa-times"></i></button></div></div>';
+    });
+  }
+  el.innerHTML+='<div class="friends-section-title"><i class="fas fa-user-friends" style="color:var(--accent)"></i> বন্ধু ('+(friendsData.friends?friendsData.friends.length:0)+')</div>';
+  if(!friendsData.friends||!friendsData.friends.length){el.innerHTML+='<div class="empty-state"><i class="fas fa-user-plus"></i><p>এখনো কোনো বন্ধু নেই।</p></div>';return;}
+  friendsData.friends.forEach(function(fn){
+    var u=allUsers.find(function(x){return x.username===fn;});
+    el.innerHTML+='<div class="friend-item"><img src="'+(u?escAttr(u.imageUrl):defaultAvatar(fn))+'" onerror="this.src=\''+defaultAvatar(fn)+'\';this.onerror=null" loading="lazy">'+
+      '<span class="fi-name">'+esc(fn)+'</span>'+
+      '<div class="fi-actions"><button class="fi-btn btn-ghost" onclick="openDM(\''+esc(fn)+'\')" style="padding:5px 9px"><i class="fas fa-comment"></i></button>'+
+      '<button class="fi-btn btn-danger" onclick="removeFriend(\''+esc(fn)+'\')"><i class="fas fa-user-minus"></i></button></div></div>';
+  });
+}
+function respondFriend(id,action){gasCall('respondFriendRequest',[id,action],function(){toast('success','সফল',action==='Accepted'?'বন্ধু হয়েছে! 🎉':'প্রত্যাখ্যান হয়েছে');loadFriends();},function(){});}
+function removeFriend(username){Swal.fire({title:'বন্ধু সরাবেন?',icon:'warning',showCancelButton:true,confirmButtonText:'হ্যাঁ',cancelButtonText:'না',background:'var(--bg2)',color:'var(--text)',confirmButtonColor:'var(--red)'}).then(function(r){if(r.isConfirmed)gasCall('removeFriend',[currentUser,username],function(){toast('info','সরানো হয়েছে','');loadFriends();},function(){});});}
+function sendFriendReqFromChat(){if(!connectedUser)return;gasCall('sendFriendRequest',[currentUser,connectedUser],function(r){toast(r&&r.success?'success':'info',r&&r.success?'সফল':'তথ্য',r?r.message:'');},function(){});}
+
+// STATUSES
+function loadStatuses(){gasCall('getActiveStatuses',[],function(ss){activeStatuses=ss||[];renderStoriesBar();},function(){activeStatuses=[];renderStoriesBar();});}
+
+// REELS
+function openReelsScreen(){
+  document.getElementById('reels-screen').style.display='flex';
+  buildReelsFeed();setActiveBottomNav('bn-reels');
+}
+function closeReelsScreen(){
+  document.getElementById('reels-screen').style.display='none';
+  document.querySelectorAll('#reels-feed iframe').forEach(function(f){f.src=f.src;});
+  setActiveBottomNav('bn-home');
+}
+function buildReelsFeed(){
+  var feed=document.getElementById('reels-feed');feed.innerHTML='';
+  var reelPosts=activeStatuses.filter(function(s){return (s.type==='youtube'||s.type==='reel')&&s.videoUrl;});
+  var allReels=reelPosts.length?reelPosts:REEL_SOURCES;
+  if(!allReels.length){feed.innerHTML='<div class="reel-item"><div class="reel-loading"><i class="fas fa-film"></i><p>কোনো রিলস নেই</p></div></div>';return;}
+  allReels.forEach(function(s){
+    var u=allUsers.find(function(x){return x.username===s.username;});
+    var img=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(s.username);
+    var rc=s.reactionCounts||{};var totalRx=Object.values(rc).reduce(function(a,b){return a+b;},0)||s.totalReactions||0;
+    var embedSrc=youtubeEmbed(s.videoUrl);
+    var item=document.createElement('div');item.className='reel-item';
+    var mediaContent='';
+    if(embedSrc){mediaContent='<div class="reel-video-wrap" data-src="'+escAttr(embedSrc)+'"><div class="reel-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><i class="fas fa-spinner"></i></div></div>';}
+    else{mediaContent='<div class="reel-text-bg">'+esc(s.content||'')+'</div>';}
+    var likedReel=postReactions['reel_'+s.statusId];
+    item.innerHTML=mediaContent+
+      '<div class="reel-actions">'+
+        '<div class="reel-act-btn" onclick="toggleReelLike(\''+escAttr(s.statusId)+'\',this)">'+
+          '<button class="rab-icon'+(likedReel?' active':'')+'" id="reel-like-'+escAttr(s.statusId)+'"><i class="fas fa-heart"></i></button>'+
+          '<span>'+(totalRx||0)+'</span>'+
+        '</div>'+
+        '<div class="reel-act-btn"><button class="rab-icon"><i class="fas fa-comment"></i></button><span>'+(s.comments||0)+'</span></div>'+
+        '<div class="reel-act-btn"><button class="rab-icon"><i class="fas fa-share"></i></button><span>শেয়ার</span></div>'+
+      '</div>'+
+      '<div class="reel-info">'+
+        '<div class="reel-info-user"><img src="'+escAttr(img)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(s.username)+'\';this.onerror=null"><strong>'+esc(s.username)+'</strong>'+
+          (friendsData.friends&&friendsData.friends.indexOf(s.username)>-1?'<span style="font-size:10px;background:rgba(108,99,255,.3);color:var(--accent2);padding:2px 8px;border-radius:10px;font-weight:700">বন্ধু</span>':'')+
+        '</div>'+
+        '<div class="reel-info-caption">'+esc(s.content||'')+'</div>'+
+      '</div>';
+    feed.appendChild(item);
+  });
+  setupReelObserver();
+}
+function setupReelObserver(){
+  var items=document.querySelectorAll('.reel-item');
+  if(!('IntersectionObserver' in window)){items.forEach(function(item){loadReelIframe(item);});return;}
+  var obs=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){loadReelIframe(entry.target);items.forEach(function(other){if(other!==entry.target){var iframe=other.querySelector('iframe');if(iframe){var src=iframe.src;iframe.src='';iframe.src=src;}}});}});},{threshold:0.7});
+  items.forEach(function(item){obs.observe(item);});
+}
+function loadReelIframe(item){
+  var wrap=item.querySelector('.reel-video-wrap[data-src]');if(!wrap||wrap.getAttribute('data-loaded'))return;
+  wrap.setAttribute('data-loaded','1');var src=wrap.getAttribute('data-src');
+  wrap.innerHTML='<iframe src="'+escAttr(src)+'&autoplay=1&mute=1" allow="autoplay;encrypted-media;fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:none"></iframe>';
+}
+function toggleReelLike(statusId,wrap){
+  var key='reel_'+statusId;postReactions[key]=postReactions[key]?'':'❤️';
+  var btn=document.getElementById('reel-like-'+statusId);
+  if(btn)btn.classList.toggle('active',!!postReactions[key]);
+  if(postReactions[key])gasCall('addStatusReaction',[statusId,currentUser,'❤️'],function(){},function(){});
+}
+
+// STORY VIEWER
+function openStoryList(username){svList=activeStatuses.filter(function(s){return s.username===username;});svIdx=0;if(svList.length)viewStoryAt(0);}
+function viewStoryAt(idx){
+  if(!svList.length)return;svIdx=Math.max(0,Math.min(idx,svList.length-1));
+  var s=svList[svIdx];svCurrentStatusId=s.statusId;
+  var viewer=document.getElementById('story-viewer');viewer.style.display='flex';
+  document.getElementById('sv-username').textContent=s.username+(svList.length>1?' ('+(svIdx+1)+'/'+svList.length+')':'');
+  document.getElementById('sv-time').textContent=getTimeAgo(new Date(s.timestamp));
+  var u=allUsers.find(function(x){return x.username===s.username;});
+  var av=document.getElementById('sv-avatar');av.src=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(s.username);av.onerror=function(){this.src=defaultAvatar(s.username);this.onerror=null;};
+  var content=document.getElementById('sv-content');
+  var dur=(s.type==='youtube'||s.type==='reel')?60000:6000;
+  if(s.type==='image'&&s.imageUrl){content.innerHTML='<div class="sv-reel-wrap" style="max-height:70vh"><img src="'+escAttr(s.imageUrl)+'" style="width:100%;max-height:70vh;object-fit:contain;display:block;border-radius:16px" onerror="this.src=\'https://picsum.photos/400/300\'">'+(s.content?'<div class="sv-caption">'+esc(s.content)+'</div>':'')+'</div>';}
+  else if((s.type==='youtube'||s.type==='reel')&&s.videoUrl){var embed=youtubeEmbed(s.videoUrl);content.innerHTML=embed?'<div class="sv-reel-wrap"><iframe src="'+escAttr(embed)+'" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>'+(s.content?'<div class="sv-caption">'+esc(s.content)+'</div>':'')+'</div>':'<div class="sv-text-content">'+esc(s.videoUrl)+'</div>';}
+  else{content.innerHTML='<div class="sv-text-content">'+esc(s.content)+'</div>';}
+  var prog=document.getElementById('sv-prog');prog.style.animation='none';prog.offsetHeight;prog.style.animationDuration=Math.floor(dur/1000)+'s';prog.style.animation='svprog '+Math.floor(dur/1000)+'s linear forwards';
+  clearTimeout(svTimer);svTimer=setTimeout(svNext,dur);
+  gasCall('recordStatusView',[s.statusId,currentUser],function(){},function(){});
+  loadSVReactions(s.statusId);loadSVComments(s.statusId);
+}
+function loadSVReactions(statusId){
+  gasCall('getStatusReactions',[[statusId]],function(data){
+    var rxData=(data&&data[statusId])||{counts:{},users:{}};
+    var myRx=rxData.users?rxData.users[currentUser]:'';
+    var row=document.getElementById('sv-reaction-row');
+    row.innerHTML=STATUS_REACTION_EMOJIS.map(function(e){var cnt=rxData.counts?rxData.counts[e]||0:0;var active=myRx===e?'active-rx':'';return '<button class="sv-reaction-btn '+active+'" onclick="svReact(\''+statusId+'\',\''+e+'\')">'+e+(cnt?' '+cnt:'')+'</button>';}).join('');
+  },function(){});
+}
+function svReact(statusId,emoji){gasCall('addStatusReaction',[statusId,currentUser,emoji],function(){loadSVReactions(statusId);loadStatuses();},function(){});}
+function loadSVComments(statusId){
+  gasCall('getStatusComments',[statusId],function(comments){
+    comments=comments||[];var el=document.getElementById('sv-comments-list');el.innerHTML='';
+    comments.slice(-5).forEach(function(c){var u=allUsers.find(function(x){return x.username===c.username;});var img=(u&&u.imageUrl)?u.imageUrl:defaultAvatar(c.username);var isMe=c.username===currentUser;var item=document.createElement('div');item.className='sv-comment-item';item.innerHTML='<img src="'+escAttr(img)+'" loading="lazy" onerror="this.src=\''+defaultAvatar(c.username)+'\';this.onerror=null"><div class="sv-comment-bubble"><strong>'+esc(c.username)+'</strong>'+esc(c.comment)+(isMe?'<span onclick="svDeleteComment(\''+escAttr(c.commentId)+'\',\''+statusId+'\')" style="margin-left:5px;cursor:pointer;color:rgba(255,71,87,.7);font-size:10px">✕</span>':'')+'</div>';el.appendChild(item);});
+    el.scrollTop=el.scrollHeight;
+  },function(){});
+}
+function svSendComment(){var inp=document.getElementById('sv-comment-input');var text=(inp.value||'').trim();if(!text||!svCurrentStatusId)return;gasCall('addStatusComment',[svCurrentStatusId,currentUser,text],function(r){if(r&&r.success){inp.value='';loadSVComments(svCurrentStatusId);}},function(){});}
+function svDeleteComment(commentId,statusId){gasCall('deleteStatusComment',[commentId,currentUser],function(r){if(r&&r.success)loadSVComments(statusId);},function(){});}
+function svNext(){clearTimeout(svTimer);if(svIdx<svList.length-1)viewStoryAt(svIdx+1);else closeStoryViewer();}
+function svPrev(){clearTimeout(svTimer);if(svIdx>0)viewStoryAt(svIdx-1);}
+function closeStoryViewer(){document.getElementById('story-viewer').style.display='none';clearTimeout(svTimer);svCurrentStatusId=null;}
+
+// PROFILE
+function openProfileModal(){
+  if(!currentUserData)return;
+  document.getElementById('pm-old-username').value=currentUser;
+  document.getElementById('pm-username').value=currentUserData.username;
+  document.getElementById('pm-password').value=currentUserData.password||'';
+  document.getElementById('pm-email').value=currentUserData.email||'';
+  document.getElementById('pm-phone').value=currentUserData.phone||'';
+  document.getElementById('pm-address').value=currentUserData.address||'';
+  document.getElementById('pm-bio').value=currentUserData.bio||'';
+  document.getElementById('pm-short-status').value=currentUserData.shortStatus||'';
+  document.getElementById('pm-online-status').value=currentUserData.onlineStatus||'Online';
+  var pav=document.getElementById('pm-avatar');pav.src=currentUserData.imageUrl||defaultAvatar(currentUser);pav.removeAttribute('data-new');pav.onerror=function(){this.src=defaultAvatar(currentUser);this.onerror=null;};
+  show('profile-modal');
+}
+function previewImgWithCrop(input,imgId){if(!input.files[0])return;var file=input.files[0];if(file.size>3*1024*1024){toast('error','ছবি বড়','৩ MB-এর কম');return;}var reader=new FileReader();reader.onload=function(e){var imgEl=document.getElementById(imgId);imgEl.src=e.target.result;imgEl.setAttribute('data-new','1');};reader.readAsDataURL(input.files[0]);}
+var avatarStyles=['adventurer','bottts','fun-emoji','lorelei','notionists','open-peeps'];
+function generateAvatar(){var style=avatarStyles[Math.floor(Math.random()*avatarStyles.length)];var seed=currentUser+(Math.random()).toString(36).slice(2,6);var url='https://api.dicebear.com/7.x/'+style+'/svg?seed='+encodeURIComponent(seed)+'&backgroundColor=6C63FF';var imgEl=document.getElementById('pm-avatar');imgEl.src=url;imgEl.setAttribute('data-new','1');toast('info','অ্যাভাটার','সেভ করুন।');}
+function removeAvatar(){document.getElementById('pm-avatar').src=defaultAvatar(currentUser);document.getElementById('pm-avatar').setAttribute('data-new','1');}
+function saveProfile(){
+  var data={oldUsername:v('pm-old-username'),newUsername:v('pm-username'),password:v('pm-password'),email:v('pm-email'),address:v('pm-address'),phone:v('pm-phone'),bio:v('pm-bio'),shortStatus:v('pm-short-status'),onlineStatus:document.getElementById('pm-online-status').value,imageBase64:null};
+  if(!data.newUsername)return toast('error','ত্রুটি','ইউজারনেম খালি রাখা যাবে না');
+  var file=document.getElementById('pm-img-file').files[0];
+  var pmAvImg=document.getElementById('pm-avatar');
+  function doSave(b64){
+    if(!b64&&pmAvImg.getAttribute('data-new')==='1'&&pmAvImg.src&&!pmAvImg.src.startsWith('blob:')){data.imageBase64=pmAvImg.src;}else{data.imageBase64=b64;}
+    gasCall('updateUserProfile',[data],function(r){
+      if(r&&r.success){if(data.newUsername!==data.oldUsername){currentUser=data.newUsername;sessionStorage.setItem('sc_user',currentUser);}toast('success','সফল',r.message||'');closeModal('profile-modal');currentUserData=Object.assign({},currentUserData,{username:data.newUsername,password:data.password,email:data.email,address:data.address,phone:data.phone,bio:data.bio,shortStatus:data.shortStatus,onlineStatus:data.onlineStatus,imageUrl:r.imageUrl||data.imageBase64||currentUserData.imageUrl});updateSidebarHeader();gasCall('getContacts',[],function(contacts){if(contacts){allUsers=contacts.filter(function(u){return u.allowed==='Yes';});renderContacts();}},function(){});}else toast('error','ত্রুটি',r?(r.message||''):'');},function(err){toast('error','সার্ভার ত্রুটি',err&&err.message?err.message:'');});
+  }
+  if(file)readFile(file,doSave);else doSave(null);
+}
+function openViewProfileModal(){
+  if(!connectedUser)return;var u=allUsers.find(function(x){return x.username===connectedUser;});if(!u)return;
+  document.getElementById('vpm-title').textContent=u.username;
+  var av=document.getElementById('vpm-avatar');av.src=u.imageUrl||defaultAvatar(u.username);av.onerror=function(){this.src=defaultAvatar(u.username);this.onerror=null;};
+  document.getElementById('vpm-name').textContent=u.username;
+  document.getElementById('vpm-status').textContent=u.shortStatus||'';
+  document.getElementById('vpm-bio').textContent=u.bio||'কোনো পরিচয় নেই।';
+  var colors=['#6C63FF,#ff6584','#22d37a,#6C63FF','#ff6584,#ffd166','#8b5cf6,#22d37a'];
+  document.getElementById('vpm-cover').style.background='linear-gradient(135deg,'+colors[u.username.length%colors.length]+')';
+  var infoEl=document.getElementById('vpm-info');
+  var oc=u.onlineStatus==='Online'?'background:rgba(34,211,122,.15);color:var(--green)':'background:var(--bg3);color:var(--text2)';
+  infoEl.innerHTML='<span style="'+oc+';border-radius:11px;padding:3px 12px;font-size:11px;font-weight:600">'+(u.onlineStatus==='Online'?'🟢 অনলাইন':'⚫ অফলাইন')+'</span>';
+  if(u.address)infoEl.innerHTML+='<span style="background:var(--bg3);border-radius:11px;padding:3px 12px;font-size:11px;color:var(--text2)">📍 '+esc(u.address)+'</span>';
+  if(u.phone)infoEl.innerHTML+='<span style="background:var(--bg3);border-radius:11px;padding:3px 12px;font-size:11px;color:var(--text2)">📞 '+esc(u.phone)+'</span>';
+  show('view-profile-modal');
+}
+function blockUser(){if(!connectedUser)return;toast('info','জানাই','ব্লক ফিচার শীঘ্রই আসছে।');}
+function openNotificationsPanel(){toast('info','নোটিফিকেশন','নতুন কিছু নেই 🔔');}
+
+// SOUND
+var audioCtx=null;
+function initAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+function playBeep(freq,dur,type){if(!soundEnabled)return;initAudio();if(!audioCtx)return;try{var osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioCtx.destination);osc.frequency.value=freq;osc.type=type||'sine';gain.gain.setValueAtTime(.3,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);osc.start(audioCtx.currentTime);osc.stop(audioCtx.currentTime+dur);}catch(e){}}
+function playSound(type){if(type==='send')playBeep(880,.08,'sine');else if(type==='receive')playBeep(660,.15,'sine');else if(type==='delete')playBeep(220,.2,'sawtooth');else if(type==='notify'){playBeep(880,.1,'sine');setTimeout(function(){playBeep(1100,.1,'sine');},150);}}
+function toggleSound(){soundEnabled=!soundEnabled;localStorage.setItem('sc_sound',soundEnabled?'on':'off');updateSoundBtn();toast('info','সাউন্ড',soundEnabled?'চালু 🔊':'বন্ধ 🔇');}
+function updateSoundBtn(){var btn=document.getElementById('sound-btn');if(!btn)return;if(soundEnabled){btn.innerHTML='<i class="fas fa-volume-high"></i><span style="position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;background:var(--green);border:2px solid var(--bg2)"></span>';}else{btn.innerHTML='<i class="fas fa-volume-xmark"></i><span style="position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--bg2)"></span>';}}
+
+// POLLING
+function startPolling(){
+  pollTimer=setInterval(function(){
+    gasCall('getUnreadMessages',[currentUser],function(msgs){
+      if(msgs&&msgs.length){msgs.forEach(function(m){if(m.sender!==connectedUser){toast('message','💬 '+m.sender,(m.message||'').substring(0,50));playSound('notify');}});gasCall('getUnreadCountForUser',[currentUser],function(c){unreadCounts=c||{};renderContacts();updateBnChatBadge();},function(){});}
+    },function(){});
+    if(chatType==='dm'&&connectedUser)loadDMMessages();
+    else if(chatType==='group'&&connectedGroup)loadGroupMessages();
+    gasCall('getContacts',[],function(contacts){if(contacts){allUsers=contacts.filter(function(u){return u.allowed==='Yes';});var me=allUsers.find(function(u){return u.username===currentUser;});if(me)currentUserData=me;renderContacts();}},function(){});
+  },8000);
+}
+function updateBnChatBadge(){var total=Object.values(unreadCounts).reduce(function(a,b){return a+b;},0);var badge=document.getElementById('bn-chat-badge');if(badge){if(total>0){badge.textContent=total>99?'99+':total;badge.classList.remove('hidden');}else badge.classList.add('hidden');}}
+
+// TABS
+function switchTab(tab){
+  ['chats','groups','friends'].forEach(function(t){document.getElementById('panel-'+t).classList.toggle('active',t===tab);document.getElementById('tab-'+t).classList.toggle('active',t===tab);});
+  if(tab==='friends')loadFriends();if(tab==='groups')loadMyGroups();
+}
+function switchSidebarTab(tab){switchTab(tab);toggleSidebar();}
+
+// BOTTOM NAV
+function setActiveBottomNav(id){['bn-home','bn-reels','bn-chat','bn-friends','bn-profile'].forEach(function(x){var el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});}
+
+// THEME
+function toggleTheme(){
+  document.body.classList.toggle('light');var isL=document.body.classList.contains('light');
+  document.getElementById('theme-btn').innerHTML=isL?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';
+  localStorage.setItem('sc_theme',isL?'light':'dark');
+}
+if(localStorage.getItem('sc_theme')==='light'){setTimeout(function(){var b=document.getElementById('theme-btn');if(b)b.innerHTML='<i class="fas fa-sun"></i>';},200);}
+
+// EMOJI
+function toggleEmojiPicker(){var ep=document.getElementById('emoji-panel');ep.style.display=ep.style.display==='flex'?'none':'flex';}
+function insertEmoji(e){var i=document.getElementById('msg-input');var s=i.selectionStart,en=i.selectionEnd;i.value=i.value.substring(0,s)+e+i.value.substring(en);i.setSelectionRange(s+e.length,s+e.length);i.focus();document.getElementById('emoji-panel').style.display='none';}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#emoji-panel')&&!e.target.closest('.emoji-picker-wrap'))document.getElementById('emoji-panel').style.display='none';
+  if(!e.target.closest('.msg-bubble'))hideAllPickers();
+  // hide rx popups when clicking outside
+  if(!e.target.closest('.post-act-btn')&&!e.target.closest('.rx-popup')){document.querySelectorAll('.rx-popup.show').forEach(function(p){p.classList.remove('show');});}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){hideAllPickers();closeStoryViewer();closeReelsScreen();document.getElementById('img-lightbox').style.display='none';closeMsgCtx();document.getElementById('emoji-panel').style.display='none';document.querySelectorAll('.rx-popup.show').forEach(function(p){p.classList.remove('show');});}
+});
+
+// HELPERS
+function v(id){var el=document.getElementById(id);return el?(el.value||'').trim():'';}
+function esc(s){var d=document.createElement('div');d.appendChild(document.createTextNode(String(s||'')));return d.innerHTML;}
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function show(id){var el=document.getElementById(id);if(el)el.classList.remove('hidden');}
+function hide(id){var el=document.getElementById(id);if(el)el.classList.add('hidden');}
+function closeModal(id){hide(id);}
+function previewImg(input,imgId){if(input.files[0]){var r=new FileReader();r.onload=function(e){document.getElementById(imgId).src=e.target.result;};r.readAsDataURL(input.files[0]);}}
+function readFile(file,cb){var r=new FileReader();r.onload=function(e){cb(e.target.result);};r.readAsDataURL(file);}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function closeSidebar(){if(window.innerWidth<=700)document.getElementById('sidebar').classList.remove('open');}
+function flashError(id,msg){var el=document.getElementById(id);if(el){el.style.border='1px solid var(--red)';el.focus();setTimeout(function(){el.style.border='';},2000);}toast('error','ত্রুটি',msg);}
+function getTimeAgo(date){var diff=Date.now()-date.getTime(),m=Math.floor(diff/60000);if(m<1)return 'এইমাত্র';if(m<60)return m+' মিনিট আগে';var h=Math.floor(m/60);if(h<24)return h+' ঘণ্টা আগে';return Math.floor(h/24)+' দিন আগে';}
+function extractYouTubeId(url){if(!url)return null;var m=url.match(/(?:youtube\.com\/(?:watch[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+function youtubeEmbed(url){var id=extractYouTubeId(url);return id?'https://www.youtube.com/embed/'+id+'?rel=0':null;}
+function toast(type,title,msg){var iconMap={success:'✅',error:'❌',info:'ℹ️',message:'💬',warning:'⚠️'};var wrap=document.getElementById('toast-container');var t=document.createElement('div');t.className='toast toast-'+type;t.innerHTML='<div class="toast-icon">'+(iconMap[type]||'💬')+'</div><div class="toast-body"><p>'+esc(title)+'</p><span>'+esc(String(msg||''))+'</span></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';wrap.appendChild(t);while(wrap.children.length>5)wrap.removeChild(wrap.firstChild);setTimeout(function(){t.classList.add('fadeout');setTimeout(function(){if(t.parentElement)t.remove();},380);},3800);}
+document.querySelectorAll('.modal-overlay').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.add('hidden');});});
+</script>
+</body>
+</html>
